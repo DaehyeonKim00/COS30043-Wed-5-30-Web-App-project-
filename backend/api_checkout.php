@@ -1,8 +1,10 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
 
-$conn = mysqli_connect('localhost', 's104838522', '040900', 'swinmusic_db');
+$conn = mysqli_connect('localhost', 's104838522', '040900', 's104838522_db');
 
 if (!$conn) {
     echo json_encode(['error' => mysqli_connect_error()]);
@@ -17,17 +19,43 @@ if ($method === 'POST') {
     $user_id = mysqli_real_escape_string($conn, $data['user_id']);
     $total_price = mysqli_real_escape_string($conn, $data['total_price']);
 
-    mysqli_query($conn, "INSERT INTO orders (user_id, total_price) VALUES ('$user_id', '$total_price')");
+    mysqli_begin_transaction($conn);
+
+    $orderResult = mysqli_query($conn, "INSERT INTO orders (user_id, total_price) VALUES ('$user_id', '$total_price')");
+
+    if (!$orderResult) {
+        mysqli_rollback($conn);
+        echo json_encode(['error' => mysqli_error($conn)]);
+        mysqli_close($conn);
+        exit();
+    }
+
     $order_id = mysqli_insert_id($conn);
 
     foreach ($data['items'] as $item) {
         $product_id = mysqli_real_escape_string($conn, $item['product_id']);
         $quantity = mysqli_real_escape_string($conn, $item['quantity']);
         $price = mysqli_real_escape_string($conn, $item['price']);
-        mysqli_query($conn, "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ('$order_id', '$product_id', '$quantity', '$price')");
+        $itemResult = mysqli_query($conn, "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ('$order_id', '$product_id', '$quantity', '$price')");
+
+        if (!$itemResult) {
+            mysqli_rollback($conn);
+            echo json_encode(['error' => mysqli_error($conn)]);
+            mysqli_close($conn);
+            exit();
+        }
     }
 
-    mysqli_query($conn, "DELETE FROM cart WHERE user_id = '$user_id'");
+    $cartDeleteResult = mysqli_query($conn, "DELETE FROM cart WHERE user_id = '$user_id'");
+
+    if (!$cartDeleteResult) {
+        mysqli_rollback($conn);
+        echo json_encode(['error' => mysqli_error($conn)]);
+        mysqli_close($conn);
+        exit();
+    }
+
+    mysqli_commit($conn);
     echo json_encode(['success' => true, 'order_id' => $order_id]);
 }
 

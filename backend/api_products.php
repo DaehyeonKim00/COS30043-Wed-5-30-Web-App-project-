@@ -1,8 +1,9 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
 
-$conn = mysqli_connect('localhost', 's104838522', '040900', 'swinmusic_db');
+$conn = mysqli_connect('localhost', 's104838522', '040900', 's104838522_db');
 
 if (!$conn) {
     echo json_encode(['error' => mysqli_connect_error()]);
@@ -32,6 +33,13 @@ if ($method === 'GET') {
     else {
         $result = mysqli_query($conn, 'SELECT * FROM products');
     }
+
+    if (!$result) {
+        echo json_encode(['error' => mysqli_error($conn)]);
+        mysqli_close($conn);
+        exit();
+    }
+
     $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
     echo json_encode($products);
 }

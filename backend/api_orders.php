@@ -1,8 +1,9 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
 
-$conn = mysqli_connect('localhost', 's104838522', '040900', 'swinmusic_db');
+$conn = mysqli_connect('localhost', 's104838522', '040900', 's104838522_db');
 
 if (!$conn) {
     echo json_encode(['error' => mysqli_connect_error()]);
@@ -15,6 +16,13 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET' && isset($_GET['user_id'])) {
     $user_id = mysqli_real_escape_string($conn, $_GET['user_id']);
     $result = mysqli_query($conn, "SELECT * FROM orders WHERE user_id = '$user_id' ORDER BY created_at DESC");
+
+    if (!$result) {
+        echo json_encode(['error' => mysqli_error($conn)]);
+        mysqli_close($conn);
+        exit();
+    }
+
     $orders = mysqli_fetch_all($result, MYSQLI_ASSOC);
     echo json_encode($orders);
 }
