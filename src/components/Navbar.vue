@@ -5,7 +5,7 @@
 
         <!-- Logo -->
         <div class="col-8 col-md-3 col-lg-2">
-            <router-link class="navbar-brand mb-0" to="/">Music Shop</router-link>
+            <router-link class="navbar-brand mb-0" to="/">SwinMusic Shop</router-link>
         </div>
 
         <!-- Hamburger button (mobile) / Hide when bigger than md -->

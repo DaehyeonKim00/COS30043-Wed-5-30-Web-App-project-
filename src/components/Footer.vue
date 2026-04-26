@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-12 col-md-4 mb-4">
-          <h5>Music Shop</h5>
+          <h5>SwinMusic Shop</h5>
           <p class="mb-0">
             Your trusted store for instruments and accessories.
           </p>
@@ -34,7 +34,7 @@
 
       <div class="row pt-3 border-top">
         <div class="col-12 text-center">
-          <p class="mb-0">© 2026 Music Shop. All rights reserved.</p>
+          <p class="mb-0">© 2026 SwinMusic Shop. All rights reserved.</p>
         </div>
       </div>
     </div>
