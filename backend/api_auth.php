@@ -1,64 +1,41 @@
 <?php
-header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
-$conn = mysqli_connect('localhost', 's104838522', '040900', 's104838522_db');
-
-if (!$conn) {
-    echo json_encode(['error' => mysqli_connect_error()]);
-    exit();
-}
-
 $method = $_SERVER['REQUEST_METHOD'];
-$data = json_decode(file_get_contents('php://input'), true);
+$request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
+$input = json_decode(file_get_contents('php://input'), true);
 
-// POST - login
-if ($method === 'POST' && isset($data['action']) && $data['action'] === 'login') {
-    $email = mysqli_real_escape_string($conn, $data['email']);
-    $result = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
+$conn = mysqli_connect('localhost', 's104838522', '040900', 's104838522_db');
+mysqli_set_charset($conn, 'utf8');
 
-    if (!$result) {
-        echo json_encode(['error' => mysqli_error($conn)]);
-        mysqli_close($conn);
-        exit();
-    }
-
-    $user = mysqli_fetch_assoc($result);
-
-    if ($user && password_verify($data['password'], $user['password'])) {
+switch ($method) {
+  case 'POST':
+    header('Content-Type: application/json');
+    if (isset($input['action']) && $input['action'] === 'login') {
+      $email = mysqli_real_escape_string($conn, $input['email']);
+      $result = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
+      $user = mysqli_fetch_assoc($result);
+      if ($user && password_verify($input['password'], $user['password'])) {
         unset($user['password']);
         echo json_encode($user);
-    } else {
+      } else {
         echo json_encode(null);
-    }
-}
-
-// POST - register
-if ($method === 'POST' && isset($data['action']) && $data['action'] === 'register') {
-    $name = mysqli_real_escape_string($conn, $data['name']);
-    $email = mysqli_real_escape_string($conn, $data['email']);
-    $password = password_hash($data['password'], PASSWORD_DEFAULT);
-
-    $check = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
-    if (!$check) {
-        echo json_encode(['error' => mysqli_error($conn)]);
-        mysqli_close($conn);
-        exit();
-    }
-
-    if (mysqli_num_rows($check) > 0) {
+      }
+    } else if (isset($input['action']) && $input['action'] === 'register') {
+      $name = mysqli_real_escape_string($conn, $input['name']);
+      $email = mysqli_real_escape_string($conn, $input['email']);
+      $password = password_hash($input['password'], PASSWORD_DEFAULT);
+      $check = mysqli_query($conn, "SELECT id FROM users WHERE email = '$email'");
+      if (mysqli_num_rows($check) > 0) {
         echo json_encode(['error' => 'Email already exists']);
-    } else {
-        $result = mysqli_query($conn, "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$password')");
-
-        if ($result) {
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['error' => mysqli_error($conn)]);
-        }
+      } else {
+        mysqli_query($conn, "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$password')");
+        echo mysqli_insert_id($conn);
+      }
     }
+    break;
 }
 
 mysqli_close($conn);
