@@ -1,78 +1,55 @@
 <?php
-header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
-$conn = mysqli_connect('localhost', 's104838522', '040900', 's104838522_db');
-
-if (!$conn) {
-    echo json_encode(['error' => mysqli_connect_error()]);
-    exit();
-}
-
 $method = $_SERVER['REQUEST_METHOD'];
-$data = json_decode(file_get_contents('php://input'), true);
+$request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
+$input = json_decode(file_get_contents('php://input'), true);
 
-// GET - fetch all products for admin page
-if ($method === 'GET') {
-    $result = mysqli_query($conn, "SELECT * FROM products ORDER BY created_at DESC");
+$conn = mysqli_connect('localhost', 's104838522', '040900', 's104838522_db');
+mysqli_set_charset($conn, 'utf8');
 
-    if (!$result) {
-        echo json_encode(['error' => mysqli_error($conn)]);
-        mysqli_close($conn);
-        exit();
-    }
+$table = 'products';
 
-    $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    echo json_encode($products);
+if (isset($input)) {
+  $columns = preg_replace('/[^a-z0-9_]+/i', '', array_keys($input));
+  $values = array_map(function ($value) use ($conn) {
+    if ($value === null) return null;
+    return mysqli_real_escape_string($conn, (string)$value);
+  }, array_values($input));
+
+  $set = '';
+  for ($i = 0; $i < count($columns); $i++) {
+    $set .= ($i > 0 ? ',' : '') . '`' . $columns[$i] . '`=';
+    $set .= ($values[$i] === null ? 'NULL' : '"' . $values[$i] . '"');
+  }
 }
 
-// POST - add product
-if ($method === 'POST') {
-    $name = mysqli_real_escape_string($conn, $data['name']);
-    $category = mysqli_real_escape_string($conn, $data['category']);
-    $description = mysqli_real_escape_string($conn, $data['description']);
-    $price = mysqli_real_escape_string($conn, $data['price']);
-    $image = mysqli_real_escape_string($conn, $data['image']);
-    $stock = mysqli_real_escape_string($conn, $data['stock']);
-    $result = mysqli_query($conn, "INSERT INTO products (name, category, description, price, image, stock) VALUES ('$name', '$category', '$description', '$price', '$image', '$stock')");
-
-    if ($result) {
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['error' => mysqli_error($conn)]);
+switch ($method) {
+  case 'GET':
+    $result = mysqli_query($conn, "SELECT * FROM `$table` ORDER BY created_at DESC");
+    header('Content-Type: application/json');
+    echo '[';
+    for ($i = 0; $i < mysqli_num_rows($result); $i++) {
+      echo ($i > 0 ? ',' : '') . json_encode(mysqli_fetch_object($result));
     }
-}
-
-// PUT - update product
-if ($method === 'PUT') {
-    $id = mysqli_real_escape_string($conn, $data['id']);
-    $name = mysqli_real_escape_string($conn, $data['name']);
-    $category = mysqli_real_escape_string($conn, $data['category']);
-    $description = mysqli_real_escape_string($conn, $data['description']);
-    $price = mysqli_real_escape_string($conn, $data['price']);
-    $image = mysqli_real_escape_string($conn, $data['image']);
-    $stock = mysqli_real_escape_string($conn, $data['stock']);
-    $result = mysqli_query($conn, "UPDATE products SET name='$name', category='$category', description='$description', price='$price', image='$image', stock='$stock' WHERE id='$id'");
-
-    if ($result) {
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['error' => mysqli_error($conn)]);
-    }
-}
-
-// DELETE - delete product
-if ($method === 'DELETE') {
-    $id = mysqli_real_escape_string($conn, $data['id']);
-    $result = mysqli_query($conn, "DELETE FROM products WHERE id = '$id'");
-
-    if ($result) {
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['error' => mysqli_error($conn)]);
-    }
+    echo ']';
+    break;
+  case 'POST':
+    mysqli_query($conn, "INSERT INTO `$table` SET $set");
+    echo mysqli_insert_id($conn);
+    break;
+  case 'PUT':
+    $id = mysqli_real_escape_string($conn, $input['id']);
+    mysqli_query($conn, "UPDATE `$table` SET $set WHERE `id`='$id'");
+    echo mysqli_affected_rows($conn);
+    break;
+  case 'DELETE':
+    $id = mysqli_real_escape_string($conn, $input['id']);
+    mysqli_query($conn, "DELETE FROM `$table` WHERE `id`='$id'");
+    echo mysqli_affected_rows($conn);
+    break;
 }
 
 mysqli_close($conn);
