@@ -10,14 +10,12 @@ import MyPage from '../views/MyPage.vue'
 import OrderHistory from '../views/OrderHistory.vue'
 import Review from '../views/Review.vue'
 import Admin from '../views/Admin.vue'
-import SearchResult from '../views/SearchResult.vue'
 import About from '../views/About.vue'
 
 const routes = [
   { path: '/', component: Home },
   { path: '/products', component: ProductList },
   { path: '/products/:id', component: ProductDetail },
-  { path: '/search', component: SearchResult },
   { path: '/register', component: Register },
   { path: '/login', component: Login },
   { path: '/about', component: About },

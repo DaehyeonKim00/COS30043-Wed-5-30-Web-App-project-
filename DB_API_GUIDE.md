@@ -117,7 +117,6 @@ CREATE TABLE reviews (
 | `home.js` | `api_products.php` |
 | `productList.js` | `api_products.php` |
 | `productDetail.js` | `api_products.php` |
-| `searchResult.js` | `api_products.php` |
 | `login.js` | `api_auth.php` |
 | `register.js` | `api_auth.php` |
 | `cart.js` | `api_cart.php` |

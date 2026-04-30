@@ -10,11 +10,14 @@
 | View (`/views`) | Components (`/components`) | API JS (`/api`) | Backend PHP (`/backend`) | DB Table | Operation |
 |-----------------|---------------------------|-----------------|--------------------------|----------|-----------|
 | `Home.vue` | `ProductCard.vue` `PaginationBar.vue` | `home.js` | `api_products.php` | `products` | GET all products |
-| `ProductList.vue` | `ProductCard.vue` `PaginationBar.vue` | `productList.js` | `api_products.php` | `products` | GET all products |
+| `ProductList.vue` | `ProductCard.vue` `PaginationBar.vue` | `productList.js` | `api_products.php` | `products` | GET all products (client-side filter + sort) |
 | `ProductDetail.vue` | — | `productDetail.js` | `api_products.php` | `products` | GET single product by id |
 | `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | GET wishlist by user_id |
 | `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | POST add product to wishlist |
 | `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | DELETE remove product from wishlist |
+
+> **Note:** `SearchResult.vue` and `searchResult.js` have been removed.
+> Navbar search navigates to `/products?q=keyword` and `ProductList.vue` reads `$route.query.q` on mount.
 
 ---
 
@@ -53,10 +56,10 @@ views/Home.vue
 
 ### Functions imported from PaginationBar.vue
 
-| Function | Usage in Home.vue |
-|----------|------------------|
-| `calcPageCount(products, perPage)` | `getPageCount` computed |
-| `getPaginatedItems(products, currentPage, perPage)` | `getItems` computed |
+| Function                                              | Usage in Home.vue         |
+| ----------------------------------------------------- | ------------------------- |
+| `calcPageCount(products, perPage)`                  | `getPageCount` computed |
+| `getPaginatedItems(products, currentPage, perPage)` | `getItems` computed     |
 
 ### Data flow inside Home.vue
 
@@ -107,16 +110,32 @@ views/ProductList.vue
 
 ### Functions imported from PaginationBar.vue
 
-| Function | Usage in ProductList.vue |
-|----------|--------------------------|
-| `calcPageCount(filteredProducts, perPage)` | `getPageCount` computed |
-| `getPaginatedItems(filteredProducts, currentPage, perPage)` | `getItems` computed |
+| Function                                                      | Usage in ProductList.vue  |
+| ------------------------------------------------------------- | ------------------------- |
+| `calcPageCount(filteredProducts, perPage)`                  | `getPageCount` computed |
+| `getPaginatedItems(filteredProducts, currentPage, perPage)` | `getItems` computed     |
+
+### Navbar Search Integration
+
+```
+components/Navbar.vue
+  submitSearch()
+    → this.$router.push('/products?q=' + keyword)
+
+views/ProductList.vue
+  mounted()
+    → this.filter.name = this.$route.query.q || ''   (read URL query on load)
+
+  watch: '$route.query.q'
+    → this.filter.name = newQ || ''                  (react to new Navbar searches)
+```
 
 ### Data flow inside ProductList.vue
 
 ```
 mounted()
   var self = this
+  self.filter.name = self.$route.query.q || ''   // Navbar search keyword
   getProducts()
     .then(data → self.products = data)
     .catch(error → self.err = '...')
@@ -124,17 +143,29 @@ mounted()
 computed:
   categories        →  unique list from products (for category dropdown)
   filteredProducts  →  products filtered by filter.name + filter.category
-  getPageCount      →  calcPageCount(this.filteredProducts, this.perPage)
-  getItems          →  getPaginatedItems(this.filteredProducts, this.currentPage, this.perPage)
+  sortedProducts    →  filteredProducts sorted by sortBy (price/name asc/desc)
+  getPageCount      →  calcPageCount(this.sortedProducts, this.perPage)
+  getItems          →  getPaginatedItems(this.sortedProducts, this.currentPage, this.perPage)
 
 watch:
   perPage           → reset currentPage = 1
   filter.name       → reset currentPage = 1
   filter.category   → reset currentPage = 1
+  sortBy            → reset currentPage = 1
+  $route.query.q    → update filter.name + reset currentPage = 1
 
 methods:
   clickCallback(pageNum) → this.currentPage = Number(pageNum)
 ```
+
+### Search & Sort criteria (meets assignment requirement)
+
+| Criteria | Method |
+|----------|--------|
+| Keyword search | Navbar search bar → `/products?q=keyword` |
+| Category filter | Dropdown on ProductList page |
+| Sort by price | Low to High / High to Low |
+| Sort by name | A to Z / Z to A |
 
 ---
 
@@ -207,11 +238,11 @@ methods:
 
 ### Wishlist button behavior
 
-| User state | inWishlist | Button shown |
-|------------|-----------|--------------|
-| Not logged in | - | "Log in to add to wishlist" link |
-| Logged in | false | `Add to Wishlist` (outline-danger) |
-| Logged in | true | `Remove from Wishlist` (btn-danger) |
+| User state    | inWishlist | Button shown                          |
+| ------------- | ---------- | ------------------------------------- |
+| Not logged in | -          | "Log in to add to wishlist" link      |
+| Logged in     | false      | `Add to Wishlist` (outline-danger)  |
+| Logged in     | true       | `Remove from Wishlist` (btn-danger) |
 
 ---
 
@@ -226,11 +257,11 @@ All Views use `PaginationBar.vue` the same way.
 import PaginationBar, { calcPageCount, getPaginatedItems } from '../components/PaginationBar.vue'
 ```
 
-| Export | Type | Description |
-|--------|------|-------------|
-| `default` | Component | `<PaginationBar>` UI (Prev / page numbers / Next) |
-| `calcPageCount(items, perPage)` | Function | Returns total page count |
-| `getPaginatedItems(items, currentPage, perPage)` | Function | Returns sliced items for current page |
+| Export                                             | Type      | Description                                         |
+| -------------------------------------------------- | --------- | --------------------------------------------------- |
+| `default`                                        | Component | `<PaginationBar>` UI (Prev / page numbers / Next) |
+| `calcPageCount(items, perPage)`                  | Function  | Returns total page count                            |
+| `getPaginatedItems(items, currentPage, perPage)` | Function  | Returns sliced items for current page               |
 
 ### Usage in template
 
@@ -245,17 +276,17 @@ import PaginationBar, { calcPageCount, getPaginatedItems } from '../components/P
 
 ## Pattern Reference (Week 8/9 Sample Code)
 
-| Pattern | Source | Used in |
-|---------|--------|---------|
-| `var self = this` + `mounted()` fetch | Week 9 api1.js | All Views |
-| `filteredProducts` computed | Week 9 applookup2.js | ProductList.vue |
-| `getItems` computed (slice) | Week 9 applookup2.js | Home, ProductList |
-| `getPageCount` computed (Math.ceil) | Week 9 applookup2.js | Home, ProductList |
-| `clickCallback(pageNum)` method | Week 9 applookup2.js | Home, ProductList |
-| `fetch().then().catch()` chain GET | Week 8 fetch requesting | api/*.js |
-| `fetch POST` with JSON body | Week 8 fetch inserting | wishlist.js |
-| `fetch DELETE` with JSON body | Week 8 fetch deleting | wishlist.js |
-| Nested `.then()` (fetch inside fetch) | Week 8 fetch patterns | ProductDetail.vue |
+| Pattern                                   | Source                  | Used in           |
+| ----------------------------------------- | ----------------------- | ----------------- |
+| `var self = this` + `mounted()` fetch | Week 9 api1.js          | All Views         |
+| `filteredProducts` computed             | Week 9 applookup2.js    | ProductList.vue   |
+| `getItems` computed (slice)             | Week 9 applookup2.js    | Home, ProductList |
+| `getPageCount` computed (Math.ceil)     | Week 9 applookup2.js    | Home, ProductList |
+| `clickCallback(pageNum)` method         | Week 9 applookup2.js    | Home, ProductList |
+| `fetch().then().catch()` chain GET      | Week 8 fetch requesting | api/*.js          |
+| `fetch POST` with JSON body             | Week 8 fetch inserting  | wishlist.js       |
+| `fetch DELETE` with JSON body           | Week 8 fetch deleting   | wishlist.js       |
+| Nested `.then()` (fetch inside fetch)   | Week 8 fetch patterns   | ProductDetail.vue |
 
 ---
 
