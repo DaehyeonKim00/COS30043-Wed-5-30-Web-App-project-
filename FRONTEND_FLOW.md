@@ -5,6 +5,19 @@
 
 ---
 
+## Summary Table — File & Data Flow by Page
+
+| View (`/views`) | Components (`/components`) | API JS (`/api`) | Backend PHP (`/backend`) | DB Table | Operation |
+|-----------------|---------------------------|-----------------|--------------------------|----------|-----------|
+| `Home.vue` | `ProductCard.vue` `PaginationBar.vue` | `home.js` | `api_products.php` | `products` | GET all products |
+| `ProductList.vue` | `ProductCard.vue` `PaginationBar.vue` | `productList.js` | `api_products.php` | `products` | GET all products |
+| `ProductDetail.vue` | — | `productDetail.js` | `api_products.php` | `products` | GET single product by id |
+| `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | GET wishlist by user_id |
+| `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | POST add product to wishlist |
+| `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | DELETE remove product from wishlist |
+
+---
+
 ## Completed Views
 
 - [Home.vue](#1-homevue)
