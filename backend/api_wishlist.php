@@ -14,7 +14,7 @@ if ($method === 'GET') {
 
     $user_id = $_GET['user_id'];
     $result = mysqli_query($conn,
-        "SELECT wishlist.id, products.name, products.price, products.image, products.category
+        "SELECT wishlist.id, products.id as product_id, products.name, products.price, products.image, products.category
          FROM wishlist
          JOIN products ON wishlist.product_id = products.id
          WHERE wishlist.user_id = $user_id"
