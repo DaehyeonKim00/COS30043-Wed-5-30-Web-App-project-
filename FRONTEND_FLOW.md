@@ -9,6 +9,7 @@
 
 - [Home.vue](#1-homevue)
 - [ProductList.vue](#2-productlistvue)
+- [ProductDetail.vue](#3-productdetailvue)
 
 ---
 
@@ -124,6 +125,83 @@ methods:
 
 ---
 
+## 3. ProductDetail.vue
+
+### Connection Chain
+
+```
+router/index.js
+  { path: '/products/:id', component: ProductDetail }
+        ↓
+views/ProductDetail.vue
+  ├── import getProductById()        →   api/productDetail.js
+  │                                          ↓ fetch GET ?id={productId}
+  │                                  backend/api_products.php
+  │                                          ↓ SELECT * FROM products WHERE id=?
+  │                                  DB: products table
+  │
+  ├── import getWishlist()           →   api/wishlist.js
+  │     (on mount, if user logged in)        ↓ fetch GET ?user_id=
+  │                                  backend/api_wishlist.php
+  │                                          ↓ SELECT wishlist JOIN products WHERE user_id=?
+  │                                  DB: wishlist table
+  │
+  ├── import addToWishlist()         →   api/wishlist.js
+  │     (on Add to Wishlist click)           ↓ fetch POST
+  │                                  backend/api_wishlist.php
+  │                                          ↓ INSERT INTO wishlist
+  │                                  DB: wishlist table
+  │
+  └── import removeFromWishlist()    →   api/wishlist.js
+        (on Remove from Wishlist click)      ↓ fetch DELETE
+                                     backend/api_wishlist.php
+                                             ↓ DELETE FROM wishlist WHERE user_id=? AND product_id=?
+                                     DB: wishlist table
+```
+
+### Backend change required
+
+`api_wishlist.php` GET query must include `products.id as product_id`:
+
+```sql
+SELECT wishlist.id, products.id as product_id, products.name, products.price, products.image, products.category
+FROM wishlist JOIN products ON wishlist.product_id = products.id
+WHERE wishlist.user_id = $user_id
+```
+
+This allows the frontend to check if the current product is already in the wishlist.
+
+### Data flow inside ProductDetail.vue
+
+```
+mounted()
+  var self = this
+  var productId = self.$route.params.id       // get ID from URL
+  self.user = JSON.parse(localStorage.getItem('user'))  // check login
+
+  getProductById(productId)
+    .then(data → self.product = data)
+    .then → if user logged in:
+      getWishlist(user.id)
+        .then(items → self.inWishlist = items.some(item => item.product_id == productId))
+    .catch(error → self.err = '...')
+
+methods:
+  toggleWishlist()
+    if inWishlist → removeFromWishlist(userId, productId) → inWishlist = false
+    else          → addToWishlist(userId, productId)      → inWishlist = true
+```
+
+### Wishlist button behavior
+
+| User state | inWishlist | Button shown |
+|------------|-----------|--------------|
+| Not logged in | - | "Log in to add to wishlist" link |
+| Logged in | false | `Add to Wishlist` (outline-danger) |
+| Logged in | true | `Remove from Wishlist` (btn-danger) |
+
+---
+
 ## Shared Component: PaginationBar.vue
 
 All Views use `PaginationBar.vue` the same way.
@@ -158,10 +236,13 @@ import PaginationBar, { calcPageCount, getPaginatedItems } from '../components/P
 |---------|--------|---------|
 | `var self = this` + `mounted()` fetch | Week 9 api1.js | All Views |
 | `filteredProducts` computed | Week 9 applookup2.js | ProductList.vue |
-| `getItems` computed (slice) | Week 9 applookup2.js | All Views |
-| `getPageCount` computed (Math.ceil) | Week 9 applookup2.js | All Views |
-| `clickCallback(pageNum)` method | Week 9 applookup2.js | All Views |
-| `fetch().then().catch()` chain | Week 8 fetch examples | api/*.js |
+| `getItems` computed (slice) | Week 9 applookup2.js | Home, ProductList |
+| `getPageCount` computed (Math.ceil) | Week 9 applookup2.js | Home, ProductList |
+| `clickCallback(pageNum)` method | Week 9 applookup2.js | Home, ProductList |
+| `fetch().then().catch()` chain GET | Week 8 fetch requesting | api/*.js |
+| `fetch POST` with JSON body | Week 8 fetch inserting | wishlist.js |
+| `fetch DELETE` with JSON body | Week 8 fetch deleting | wishlist.js |
+| Nested `.then()` (fetch inside fetch) | Week 8 fetch patterns | ProductDetail.vue |
 
 ---
 
