@@ -15,6 +15,7 @@
 | `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | GET wishlist by user_id |
 | `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | POST add product to wishlist |
 | `ProductDetail.vue` | — | `wishlist.js` | `api_wishlist.php` | `wishlist` | DELETE remove product from wishlist |
+| `About.vue` | — | — (no API file) | — | — | Fully static, no fetch |
 
 > **Note:** `SearchResult.vue` and `searchResult.js` have been removed.
 > Navbar search navigates to `/products?q=keyword` and `ProductList.vue` reads `$route.query.q` on mount.
@@ -26,6 +27,7 @@
 - [Home.vue](#1-homevue)
 - [ProductList.vue](#2-productlistvue)
 - [ProductDetail.vue](#3-productdetailvue)
+- [About.vue](#4-aboutvue)
 
 ---
 
@@ -243,6 +245,43 @@ methods:
 | Not logged in | -          | "Log in to add to wishlist" link      |
 | Logged in     | false      | `Add to Wishlist` (outline-danger)  |
 | Logged in     | true       | `Remove from Wishlist` (btn-danger) |
+
+---
+
+## 4. About.vue
+
+### Connection Chain
+
+```
+router/index.js
+  { path: '/about', component: About }
+        ↓
+views/About.vue
+  └── No API file, no backend call — fully static page
+```
+
+> **Note:** `About.vue` is a fully static informational page. No `api/` file and no PHP backend
+> are involved. All content is defined directly in `data()` and the template.
+
+### Data flow inside About.vue
+
+```
+data():
+  features → hardcoded array [ { title, desc } × 3 ]
+  team     → hardcoded array [ { initial, name, role } × 5 ]
+
+No mounted(), no fetch, no isLoading/err states.
+```
+
+### Sections rendered
+
+| Section        | Content source             | Template block      |
+| -------------- | -------------------------- | ------------------- |
+| Hero banner    | `info.title`, `info.description` from `about.js` | `v-else` top        |
+| Mission text   | Static in template         | row + col-md-7      |
+| Features cards | `features` array in `data()` | `v-for` card grid   |
+| Team cards     | `team` array in `data()`   | `v-for` card grid   |
+| CTA buttons    | Static router-links        | border-top section  |
 
 ---
 
