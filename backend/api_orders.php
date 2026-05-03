@@ -1,9 +1,8 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
-
+require 'db.php';
 $method = $_SERVER['REQUEST_METHOD'];
-$request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
 $input = json_decode(file_get_contents('php://input'), true);
 
 $conn = mysqli_connect('localhost', 's104838522', '040900', 's104838522_db');
