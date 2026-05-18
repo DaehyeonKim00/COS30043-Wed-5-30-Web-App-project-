@@ -1,45 +1,88 @@
-<!--
-  ============================================================
-  TEMPORARY REGISTER (test mode) — for testing only
-  ------------------------------------------------------------
-  Register.vue is officially assigned to a teammate (Hung) and
-  is still "Not Started".
-
-  Real registration cannot work right now: the Mercury server's
-  PHP does not support password_hash(), so api_auth.php fails.
-  Since login is currently a FAKE login (see Login.vue), there
-  is nothing for Register to do, so this page just guides the
-  user to the test login.
-
-  TO REMOVE LATER: revert this file back to the original stub
-  (just <h1>Register</h1>) so the teammate can implement it.
-  ============================================================
--->
 <template>
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-6 col-lg-6">
-      <h1 class="mb-4">Register</h1>
-
-      <div class="alert alert-info">
-        <p class="mb-2">
-          Registration is not available in test mode.
-        </p>
-        <p class="mb-0">
-          The login is currently a temporary test login — just go to the
-          Login page and sign in with any email and password.
-        </p>
-      </div>
-
-      <router-link to="/login" class="btn btn-dark">Go to Login</router-link>
+  <div class="container mt-5" style="max-width: 500px">
+    <h2 class="mb-4">Create Account</h2>
+ 
+    <div v-if="err" class="alert alert-danger">{{ err }}</div>
+    <div v-if="msg" class="alert alert-success">{{ msg }}</div>
+ 
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input v-model="form.name" type="text" class="form-control" placeholder="Your name" />
     </div>
+ 
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input v-model="form.email" type="email" class="form-control" placeholder="you@email.com" />
+    </div>
+ 
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input v-model="form.password" type="password" class="form-control" placeholder="Min. 8 characters" />
+    </div>
+ 
+    <button class="btn btn-primary w-100" @click="submit" :disabled="isLoading">
+      {{ isLoading ? 'Registering...' : 'Register' }}
+    </button>
+ 
+    <p class="mt-3 text-center">
+      Already have an account? <router-link to="/login">Login here</router-link>
+    </p>
   </div>
 </template>
-
+ 
 <script>
+import { registerUser } from '../api/register.js'
+ 
 export default {
-  name: 'Register'
+  name: 'Register',
+  data() {
+    return {
+      form: { name: '', email: '', password: '' },
+      isLoading: false,
+      err: '',
+      msg: ''
+    }
+  },
+  methods: {
+    submit() {
+      var self = this
+      self.err = ''
+      self.msg = ''
+ 
+      // T7 — Form Validation
+      if (!self.form.name || !self.form.email || !self.form.password) {
+        self.err = 'All fields are required.'
+        return
+      }
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(self.form.email)) {
+        self.err = 'Please enter a valid email address.'
+        return
+      }
+      if (self.form.password.length < 8) {
+        self.err = 'Password must be at least 8 characters.'
+        return
+      }
+ 
+      self.isLoading = true
+      registerUser(self.form.name, self.form.email, self.form.password)
+        .then(function(data) {
+          self.isLoading = false
+          if (data && data.error) {
+            self.err = data.error
+          } else {
+            self.msg = 'Account created successfully! Redirecting to login...'
+            setTimeout(function() { self.$router.push('/login') }, 1500)
+          }
+        })
+        .catch(function() {
+          self.isLoading = false
+          self.err = 'Registration failed. Please try again.'
+        })
+    }
+  }
 }
 </script>
-
+ 
 <style scoped>
 </style>

@@ -1,95 +1,70 @@
-<!--
-  ============================================================
-  TEMPORARY FAKE LOGIN — for testing only
-  ------------------------------------------------------------
-  Login.vue is officially assigned to a teammate (Hung) and is
-  still "Not Started".
-
-  This is a FAKE login: it does NOT call the backend at all.
-  The Mercury server's PHP does not support password_hash(),
-  so api_auth.php cannot be used. Instead, clicking "Login"
-  just saves a dummy user (id = 1) so the user-specific pages
-  (MyPage / OrderHistory / Review / Admin) can be tested.
-
-  TO REMOVE LATER: revert this file back to the original stub
-  (just <h1>Login</h1>) so the teammate can implement real auth.
-  ============================================================
--->
 <template>
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-6 col-lg-4">
-      <h1 class="mb-4">Login</h1>
+  <div class="container mt-5" style="max-width: 500px">
+    <h2 class="mb-4">Login</h2>
 
-      <div class="alert alert-warning py-2">
-        Test mode: any email/password works. No real authentication.
-      </div>
+    <div v-if="err" class="alert alert-danger">{{ err }}</div>
 
-      <form @submit.prevent="submitLogin">
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input
-            id="email"
-            v-model="email"
-            type="email"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <!-- Test-only: choose role so the Admin page can be tested -->
-        <div class="form-check mb-3">
-          <input
-            id="asAdmin"
-            v-model="asAdmin"
-            type="checkbox"
-            class="form-check-input"
-          />
-          <label for="asAdmin" class="form-check-label">
-            Log in as admin (test only)
-          </label>
-        </div>
-
-        <button class="btn btn-dark w-100" type="submit">Login</button>
-      </form>
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input v-model="form.email" type="email" class="form-control" placeholder="you@email.com" />
     </div>
+
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input v-model="form.password" type="password" class="form-control" placeholder="Your password" />
+    </div>
+
+    <button class="btn btn-primary w-100" @click="submit" :disabled="isLoading">
+      {{ isLoading ? 'Logging in...' : 'Login' }}
+    </button>
+
+    <p class="mt-3 text-center">
+      No account yet? <router-link to="/register">Register here</router-link>
+    </p>
   </div>
 </template>
 
 <script>
+import { loginUser } from '../api/login.js'
+
 export default {
   name: 'Login',
   data() {
     return {
-      email: '',
-      password: '',
-      asAdmin: false
+      form: { email: '', password: '' },
+      isLoading: false,
+      err: ''
     }
   },
   methods: {
-    submitLogin() {
+    submit() {
       var self = this
-      // FAKE login — no backend call. Save a dummy user so other
-      // pages have a logged-in user to work with.
-      var dummyUser = {
-        id: 1,
-        name: 'Test User',
-        email: self.email,
-        role: self.asAdmin ? 'admin' : 'user'
+      self.err = ''
+
+      // T7 — Form Validation
+      if (!self.form.email || !self.form.password) {
+        self.err = 'Email and password are required.'
+        return
       }
-      localStorage.setItem('user', JSON.stringify(dummyUser))
-      self.$store.commit('setUser', dummyUser)
-      self.$router.push('/home')
+
+      self.isLoading = true
+      loginUser(self.form.email, self.form.password)
+        .then(function(user) {
+          self.isLoading = false
+          if (!user || user.error) {
+            self.err = 'Invalid email or password.'
+          } else {
+            // Save to localStorage (used by router auth guard)
+            localStorage.setItem('user', JSON.stringify(user))
+            // Save to Vuex store (used by Navbar to show/hide links)
+            self.$store.commit('setUser', user)
+            self.$router.push('/')
+          }
+        })
+        .catch(function() {
+          self.isLoading = false
+          self.err = 'Login failed. Please try again.'
+        })
     }
   }
 }
