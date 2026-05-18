@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { store } from '../store'
 
 import Home from '../views/Home.vue'
 import ProductList from '../views/ProductList.vue'
@@ -67,19 +68,20 @@ const routes = [
     component: MyPage
   },
   {
-    path: '/orders',
+    path: '/orderhistory',
     name: 'OrderHistory',
     component: OrderHistory
   },
   {
-    path: '/reviews',
+    path: '/review',
     name: 'Review',
     component: Review
   },
   {
     path: '/admin',
     name: 'Admin',
-    component: Admin
+    component: Admin,
+    meta: { requiresAdmin: true }
   },
 
   {
@@ -91,6 +93,20 @@ const routes = [
 const router = createRouter({
   history: createWebHistory('/cos30043/s104838522/test/'),
   routes
+})
+
+// Route guard: block non-admin users from admin-only pages
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAdmin) {
+    var user = store.state.user
+    if (user && user.role === 'admin') {
+      next()
+    } else {
+      next('/home')
+    }
+  } else {
+    next()
+  }
 })
 
 export default router

@@ -1,9 +1,13 @@
-const adminApiUrl = 'http://localhost/backend/api_admin.php'
+var adminApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_admin.php'
 
 export function getProducts() {
   return fetch(adminApiUrl)
     .then(response => {
       return response.json()
+    })
+    .catch(error => {
+      console.error('Error fetching products:', error)
+      throw error
     })
 }
 
@@ -18,6 +22,10 @@ export function addProduct(product) {
     .then(response => {
       return response.json()
     })
+    .catch(error => {
+      console.error('Error adding product:', error)
+      throw error
+    })
 }
 
 export function updateProduct(product) {
@@ -30,6 +38,10 @@ export function updateProduct(product) {
   })
     .then(response => {
       return response.json()
+    })
+    .catch(error => {
+      console.error('Error updating product:', error)
+      throw error
     })
 }
 
@@ -45,5 +57,9 @@ export function deleteProduct(id) {
   })
     .then(response => {
       return response.json()
+    })
+    .catch(error => {
+      console.error('Error deleting product:', error)
+      throw error
     })
 }

@@ -39,6 +39,16 @@
                   <li class="nav-item">
                     <router-link class="nav-link" to="/about">About</router-link>
                   </li>
+                  <li class="nav-item">
+                    <router-link class="nav-link" to="/review">Reviews</router-link>
+                  </li>
+                  <!-- Admin link: only visible to users with the admin role -->
+                  <li
+                    v-if="$store.state.user && $store.state.user.role === 'admin'"
+                    class="nav-item"
+                  >
+                    <router-link class="nav-link" to="/admin">Admin</router-link>
+                  </li>
                 </ul>
               </div>
 

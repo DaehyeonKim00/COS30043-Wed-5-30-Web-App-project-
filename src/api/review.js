@@ -1,9 +1,13 @@
-const reviewApiUrl = 'http://localhost/backend/api_review.php'
+var reviewApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_review.php'
 
 export function getReviews(productId) {
-  return fetch(`${reviewApiUrl}?product_id=${productId}`)
+  return fetch(reviewApiUrl + '?product_id=' + productId)
     .then(response => {
       return response.json()
+    })
+    .catch(error => {
+      console.error('Error fetching reviews:', error)
+      throw error
     })
 }
 
@@ -23,6 +27,10 @@ export function postReview(userId, productId, rating, comment) {
     .then(response => {
       return response.json()
     })
+    .catch(error => {
+      console.error('Error posting review:', error)
+      throw error
+    })
 }
 
 export function updateReview(id, rating, comment) {
@@ -40,6 +48,10 @@ export function updateReview(id, rating, comment) {
     .then(response => {
       return response.json()
     })
+    .catch(error => {
+      console.error('Error updating review:', error)
+      throw error
+    })
 }
 
 export function deleteReview(id) {
@@ -54,5 +66,9 @@ export function deleteReview(id) {
   })
     .then(response => {
       return response.json()
+    })
+    .catch(error => {
+      console.error('Error deleting review:', error)
+      throw error
     })
 }

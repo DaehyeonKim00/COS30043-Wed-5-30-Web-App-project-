@@ -2,33 +2,35 @@
   <div class="container py-5">
     <h1 class="mb-4">Order History</h1>
 
-    <div class="card shadow-sm">
+    <!-- Loading state -->
+    <div v-if="isLoading" class="text-center py-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div v-else-if="err" class="alert alert-danger">
+      {{ err }}
+    </div>
+
+    <!-- Orders table -->
+    <div v-else class="card shadow-sm">
       <div class="card-body">
         <table class="table table-hover">
           <thead>
             <tr>
               <th>Order ID</th>
               <th>Date</th>
-              <th>Product</th>
               <th>Total</th>
-              <th>Status</th>
             </tr>
           </thead>
 
           <tbody>
             <tr v-for="order in orders" :key="order.id">
               <td>{{ order.id }}</td>
-              <td>{{ order.date }}</td>
-              <td>{{ order.product }}</td>
-              <td>${{ order.total }}</td>
-              <td>
-                <span
-                  class="badge"
-                  :class="order.status === 'Delivered' ? 'bg-success' : 'bg-warning text-dark'"
-                >
-                  {{ order.status }}
-                </span>
-              </td>
+              <td>{{ order.created_at }}</td>
+              <td>${{ order.total_price }}</td>
             </tr>
           </tbody>
         </table>
@@ -41,30 +43,43 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script>
+import { getOrders } from '../api/orderHistory.js'
 
-const orders = ref([
-  {
-    id: 'ORD1001',
-    date: '2026-05-01',
-    product: 'Acoustic Guitar',
-    total: 299,
-    status: 'Delivered'
+export default {
+  name: 'OrderHistory',
+  data() {
+    return {
+      orders: [],
+      isLoading: false,
+      err: '',
+      msg: '',
+
+      // ===== TEMPORARY (login not implemented yet) =====
+      // Using a fixed user id so the page can be tested against the DB.
+      userId: 1
+      // ===== REAL CODE (use after login is implemented) =====
+      // Read the logged-in user saved at login time:
+      // userId: JSON.parse(localStorage.getItem('user')).id
+      // (or from Vuex: this.$store.state.user.id)
+    }
   },
-  {
-    id: 'ORD1002',
-    date: '2026-05-04',
-    product: 'Electric Keyboard',
-    total: 499,
-    status: 'Shipping'
-  },
-  {
-    id: 'ORD1003',
-    date: '2026-05-06',
-    product: 'Drum Kit',
-    total: 899,
-    status: 'Processing'
+  mounted() {
+    var self = this
+    self.isLoading = true
+    getOrders(self.userId)
+      .then(data => {
+        self.orders = data
+        self.msg = 'Successful!'
+        self.isLoading = false
+      })
+      .catch(error => {
+        self.err = 'Failed to load orders. Please try again later.'
+        self.isLoading = false
+      })
   }
-])
+}
 </script>
+
+<style scoped>
+</style>

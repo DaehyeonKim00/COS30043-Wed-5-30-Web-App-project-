@@ -11,50 +11,33 @@ export const store = createStore({
     }
   },
 
-  // !!!!Below codes are Example codes!!!!!
-  // read state (used in Phase 3+)
-  // getters: {
-  //   cartCount: state => {
-  //     return state.cart.length
-  //   },
-  //   cartTotal: state => {
-  //     return state.cart.reduce((total, item) => total + item.price * item.quantity, 0)
-  //   },
-  //   wishlistCount: state => {
-  //     return state.wishlist.length
-  //   }
-  // },
+  // change state
+  mutations: {
+    setUser(state, user) {
+      state.user = user
+      state.isLoggedIn = true
+    },
+    logout(state) {
+      state.user = null
+      state.isLoggedIn = false
+      state.cart = []
+      state.wishlist = []
+    }
 
-  // change state (used in Phase 3+)
-  // mutations: {
-  //   setUser(state, user) {
-  //     state.user = user
-  //     state.isLoggedIn = true
-  //   },
-  //   logout(state) {
-  //     state.user = null
-  //     state.isLoggedIn = false
-  //     state.cart = []
-  //     state.wishlist = []
-  //   },
-  //   addToCart(state, product) {
-  //     state.cart.push(product)
-  //   },
-  //   removeFromCart(state, productId) {
-  //     state.cart = state.cart.filter(item => item.id !== productId)
-  //   },
-  //   addToWishlist(state, product) {
-  //     state.wishlist.push(product)
-  //   },
-  //   removeFromWishlist(state, productId) {
-  //     state.wishlist = state.wishlist.filter(item => item.id !== productId)
-  //   }
-  // },
+    // ===== Below are example mutations for Phase 3+ (not used yet) =====
+    // addToCart(state, product) {
+    //   state.cart.push(product)
+    // },
+    // removeFromCart(state, productId) {
+    //   state.cart = state.cart.filter(item => item.id !== productId)
+    // },
+    // addToWishlist(state, product) {
+    //   state.wishlist.push(product)
+    // },
+    // removeFromWishlist(state, productId) {
+    //   state.wishlist = state.wishlist.filter(item => item.id !== productId)
+    // }
+  }
 
-  // async operations (used in Phase 3+)
-  // actions: {
-  //   loginUser({ commit }, userData) {
-  //     commit('setUser', userData)
-  //   }
-  // }
+  // getters / actions stay disabled until Phase 3+ (see git history)
 })
