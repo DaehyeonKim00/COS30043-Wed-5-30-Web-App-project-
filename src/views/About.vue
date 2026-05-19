@@ -1,114 +1,42 @@
 <template>
-  <div>
-    <!-- Hero Section -->
-    <section class="about-hero rounded-3 text-white text-center py-5 mb-5 px-3">
-      <h1 class="display-5 fw-bold mb-3">About SwinMusic Shop</h1>
-      <p class="lead mb-0">
-        SwinMusic Shop is an online music store for instruments, accessories, and music lovers.
+  <div class="container py-4">
+    <h2 class="mb-4">About SwinMusic Shop</h2>
+
+    <div class="card p-4 shadow-sm mb-4">
+      <h5>Our Music Shop</h5>
+      <p>
+        SwinMusic Shop is an online music store that provides quality musical
+        instruments and accessories for students, beginners, and professional musicians.
       </p>
-    </section>
+      <p>
+        Customers can browse guitars, drums, keyboards, and accessories, add items
+        to cart, write reviews, and manage their own profile.
+      </p>
+    </div>
 
-    <!-- Music Shop Introduction -->
-    <section class="mb-5">
-      <div class="row align-items-center g-4">
-        <div class="col-12 col-md-7">
-          <h2 class="fw-bold mb-3">Music Shop Introduction</h2>
-          <p class="text-muted">
-            SwinMusic Shop is a modern online music store created to help customers
-            easily browse and purchase musical instruments and accessories.
-          </p>
-          <p class="text-muted mb-0">
-            Our shop includes guitars, drums, keyboards, microphones, strings,
-            stands, and other music accessories. The goal of this website is to give
-            users a simple, responsive, and user-friendly shopping experience.
-          </p>
-        </div>
-
-        <div class="col-12 col-md-5">
-          <div class="bg-dark rounded-3 text-white text-center py-5">
-            <p class="display-6 fw-bold mb-1">SwinMusic</p>
-            <p class="text-light mb-0">Your sound starts here</p>
-          </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="card p-4 shadow-sm h-100">
+          <h5>Contact Information</h5>
+          <p><strong>Email:</strong> support@swinmusicshop.com</p>
+          <p><strong>Phone:</strong> +61 400 000 000</p>
+          <p><strong>Opening Hours:</strong> Monday - Friday, 9 AM - 5 PM</p>
         </div>
       </div>
-    </section>
 
-    <!-- What We Offer -->
-    <section class="mb-5">
-      <h2 class="fw-bold mb-4 text-center">What We Offer</h2>
-
-      <div class="row g-4">
-        <div class="col-12 col-md-4" v-for="feature in features" :key="feature.title">
-          <div class="card h-100 border-0 shadow-sm text-center p-4">
-            <h5 class="fw-bold mb-2">{{ feature.title }}</h5>
-            <p class="text-muted mb-0">{{ feature.desc }}</p>
-          </div>
+      <div class="col-md-6 mb-3">
+        <div class="card p-4 shadow-sm h-100">
+          <h5>Location</h5>
+          <p>Swinburne University Area</p>
+          <p>Hawthorn, Melbourne, Australia</p>
         </div>
       </div>
-    </section>
-
-    <!-- Contact and Location -->
-    <section class="mb-5">
-      <h2 class="fw-bold mb-4 text-center">Contact Information & Location</h2>
-
-      <div class="row g-4">
-        <div class="col-12 col-md-6">
-          <div class="card h-100 border-0 shadow-sm p-4">
-            <h4 class="fw-bold mb-3">Contact Info</h4>
-            <p><strong>Email:</strong> support@swinmusicshop.com</p>
-            <p><strong>Phone:</strong> (03) 9000 1234</p>
-            <p><strong>Opening Hours:</strong> Monday - Friday, 9:00 AM - 5:00 PM</p>
-            <p class="mb-0"><strong>Customer Support:</strong> Available for product and order enquiries.</p>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6">
-          <div class="card h-100 border-0 shadow-sm p-4">
-            <h4 class="fw-bold mb-3">Location</h4>
-            <p><strong>Store:</strong> SwinMusic Shop</p>
-            <p><strong>Address:</strong> 1 John Street, Hawthorn VIC 3122, Australia</p>
-            <p><strong>City:</strong> Melbourne</p>
-            <p class="mb-0"><strong>Service Area:</strong> Online orders available across Australia.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="text-center py-4 border-top mt-4">
-      <h4 class="fw-bold mb-3">Ready to find your sound?</h4>
-      <router-link to="/products" class="btn btn-dark btn-lg me-2">Shop Now</router-link>
-      <router-link to="/" class="btn btn-outline-dark btn-lg">Back to Home</router-link>
-    </section>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'About',
-  data() {
-    return {
-      features: [
-        {
-          title: 'Musical Instruments',
-          desc: 'Browse guitars, drums, keyboards, and accessories.'
-        },
-        {
-          title: 'Easy Shopping',
-          desc: 'Search, view details, add to cart, and checkout easily.'
-        },
-        {
-          title: 'Trusted Service',
-          desc: 'Helpful support and reliable information for every customer.'
-        }
-      ]
-    }
-  }
+  name: 'About'
 }
 </script>
-
-<style scoped>
-.about-hero {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-}
-</style>

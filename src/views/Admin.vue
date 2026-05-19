@@ -1,235 +1,206 @@
 <template>
   <div class="container py-5">
-    <h1 class="mb-4">Admin Product Management</h1>
+    <h1 class="mb-4">Admin Panel</h1>
 
-    <!-- Product form -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <h3>{{ editingId ? 'Edit Product' : 'Add Product' }}</h3>
+    <div class="card p-4 mb-4">
+      <h3 class="mb-3">Add Product</h3>
 
-        <div class="mb-3">
-          <label class="form-label">Product Name</label>
-          <input v-model="form.name" class="form-control" type="text">
+      <div class="mb-3">
+        <label class="form-label">Product Name</label>
+        <input v-model="newProduct.name" type="text" class="form-control" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select v-model="newProduct.category" class="form-select">
+          <option>Guitar</option>
+          <option>Keyboard</option>
+          <option>Drums</option>
+          <option>Accessories</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea
+          v-model="newProduct.description"
+          class="form-control"
+        ></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Price</label>
+        <input
+          v-model="newProduct.price"
+          type="number"
+          class="form-control"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Stock</label>
+        <input
+          v-model="newProduct.stock"
+          type="number"
+          class="form-control"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Upload Product Image</label>
+        <input
+          type="file"
+          class="form-control"
+          @change="handleImageUpload"
+        />
+      </div>
+
+      <div v-if="newProduct.image" class="mb-3">
+        <img
+          :src="newProduct.image"
+          style="width: 150px; height: 150px; object-fit: cover;"
+          class="rounded border"
+        />
+      </div>
+
+      <button class="btn btn-dark" @click="addProduct">
+        Add Product
+      </button>
+    </div>
+
+    <div class="card p-4">
+      <h3 class="mb-3">Product List</h3>
+
+      <div
+        v-for="(product, index) in products"
+        :key="index"
+        class="border rounded p-3 mb-3"
+      >
+        <div class="row align-items-center">
+          <div class="col-md-2">
+            <img
+              :src="product.image"
+              style="width: 100px; height: 100px; object-fit: cover;"
+              class="rounded border"
+            />
+          </div>
+
+          <div class="col-md-7">
+            <h5>{{ product.name }}</h5>
+            <p>{{ product.description }}</p>
+            <p><strong>Category:</strong> {{ product.category }}</p>
+            <p><strong>Price:</strong> ${{ product.price }}</p>
+            <p><strong>Stock:</strong> {{ product.stock }}</p>
+          </div>
+
+          <div class="col-md-3 text-end">
+            <button
+              class="btn btn-warning me-2"
+              @click="editProduct(index)"
+            >
+              Edit
+            </button>
+
+            <button
+              class="btn btn-danger"
+              @click="deleteProduct(index)"
+            >
+              Delete
+            </button>
+          </div>
         </div>
-
-        <div class="mb-3">
-          <label class="form-label">Category</label>
-          <select v-model="form.category" class="form-select">
-            <option>Guitar</option>
-            <option>Drums</option>
-            <option>Keyboard</option>
-            <option>Accessories</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Description</label>
-          <textarea v-model="form.description" class="form-control" rows="3"></textarea>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Price</label>
-          <input v-model.number="form.price" class="form-control" type="number">
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Stock</label>
-          <input v-model.number="form.stock" class="form-control" type="number">
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Image URL</label>
-          <input v-model="form.image" class="form-control" type="text">
-        </div>
-
-        <img v-if="form.image" :src="form.image" class="preview-img mb-3">
-
-        <br>
-
-        <button class="btn btn-dark me-2" @click="saveProduct">
-          {{ editingId ? 'Update Product' : 'Add Product' }}
-        </button>
-
-        <button v-if="editingId" class="btn btn-secondary" @click="cancelEdit">
-          Cancel
-        </button>
-
-        <p v-if="msg" class="text-success mt-3">{{ msg }}</p>
       </div>
     </div>
-
-    <h3>Product List</h3>
-
-    <!-- Loading state -->
-    <div v-if="isLoading" class="text-center py-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
-
-    <!-- Error state -->
-    <div v-else-if="err" class="alert alert-danger">
-      {{ err }}
-    </div>
-
-    <!-- Product table -->
-    <table v-else class="table table-bordered align-middle">
-      <thead>
-        <tr>
-          <th>Image</th>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Price</th>
-          <th>Stock</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr v-for="product in products" :key="product.id">
-          <td>
-            <img v-if="product.image" :src="product.image" class="table-img">
-            <span v-else>No image</span>
-          </td>
-          <td>{{ product.name }}</td>
-          <td>{{ product.category }}</td>
-          <td>${{ product.price }}</td>
-          <td>{{ product.stock }}</td>
-          <td>
-            <button class="btn btn-sm btn-primary me-2" @click="editProduct(product)">Edit</button>
-            <button class="btn btn-sm btn-danger" @click="removeProduct(product.id)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p v-if="!isLoading && !err && products.length === 0" class="text-muted">
-      No products found.
-    </p>
   </div>
 </template>
 
-<script>
-import { getProducts, addProduct, updateProduct, deleteProduct } from '../api/admin.js'
+<script setup>
+import { ref, onMounted } from 'vue'
 
-export default {
-  name: 'Admin',
-  data() {
-    return {
-      products: [],
-      isLoading: false,
-      err: '',
-      msg: '',
-      editingId: null,
-      form: {
-        name: '',
-        category: 'Guitar',
-        description: '',
-        price: 0,
-        stock: 0,
-        image: ''
-      }
-    }
-  },
-  mounted() {
-    this.loadProducts()
-  },
-  methods: {
-    loadProducts() {
-      var self = this
-      self.isLoading = true
-      getProducts()
-        .then(data => {
-          self.products = data
-          self.isLoading = false
-        })
-        .catch(error => {
-          self.err = 'Failed to load products. Please try again later.'
-          self.isLoading = false
-        })
-    },
-    saveProduct() {
-      var self = this
-      if (!self.form.name || self.form.price <= 0) {
-        alert('Please fill product name and price.')
-        return
-      }
+const products = ref([])
 
-      if (self.editingId) {
-        updateProduct({ id: self.editingId, ...self.form })
-          .then(data => {
-            self.msg = 'Product updated successfully.'
-            self.resetForm()
-            self.loadProducts()
-          })
-          .catch(error => {
-            self.err = 'Failed to update product.'
-          })
-      } else {
-        addProduct({ ...self.form })
-          .then(data => {
-            self.msg = 'Product added successfully.'
-            self.resetForm()
-            self.loadProducts()
-          })
-          .catch(error => {
-            self.err = 'Failed to add product.'
-          })
-      }
-    },
-    editProduct(product) {
-      this.editingId = product.id
-      this.form = {
-        name: product.name,
-        category: product.category,
-        description: product.description,
-        price: product.price,
-        stock: product.stock,
-        image: product.image
-      }
-    },
-    removeProduct(id) {
-      var self = this
-      deleteProduct(id)
-        .then(data => {
-          self.msg = 'Product deleted successfully.'
-          self.loadProducts()
-        })
-        .catch(error => {
-          self.err = 'Failed to delete product.'
-        })
-    },
-    cancelEdit() {
-      this.resetForm()
-    },
-    resetForm() {
-      this.editingId = null
-      this.form = {
-        name: '',
-        category: 'Guitar',
-        description: '',
-        price: 0,
-        stock: 0,
-        image: ''
-      }
-    }
+const newProduct = ref({
+  name: '',
+  category: 'Guitar',
+  description: '',
+  price: '',
+  stock: '',
+  image: ''
+})
+
+const loadProducts = () => {
+  const saved = localStorage.getItem('musicProducts')
+
+  if (saved) {
+    products.value = JSON.parse(saved)
   }
 }
+
+const saveProducts = () => {
+  localStorage.setItem(
+    'musicProducts',
+    JSON.stringify(products.value)
+  )
+}
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0]
+
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onload = () => {
+    newProduct.value.image = reader.result
+  }
+
+  reader.readAsDataURL(file)
+}
+
+const addProduct = () => {
+  if (
+    !newProduct.value.name ||
+    !newProduct.value.price ||
+    !newProduct.value.image
+  ) {
+    alert('Please fill all required fields')
+    return
+  }
+
+  products.value.push({
+    ...newProduct.value
+  })
+
+  saveProducts()
+
+  newProduct.value = {
+    name: '',
+    category: 'Guitar',
+    description: '',
+    price: '',
+    stock: '',
+    image: ''
+  }
+
+  alert('Product added successfully')
+}
+
+const deleteProduct = (index) => {
+  products.value.splice(index, 1)
+  saveProducts()
+}
+
+const editProduct = (index) => {
+  const product = products.value[index]
+
+  newProduct.value = { ...product }
+
+  products.value.splice(index, 1)
+
+  saveProducts()
+}
+
+onMounted(() => {
+  loadProducts()
+})
 </script>
-
-<style scoped>
-.preview-img {
-  width: 220px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-
-.table-img {
-  width: 70px;
-  height: 55px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-</style>
