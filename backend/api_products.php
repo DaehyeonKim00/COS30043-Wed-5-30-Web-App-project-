@@ -12,6 +12,19 @@ if ($method === 'GET') {
         $result = mysqli_query($conn, "SELECT * FROM products WHERE id=$id");
         $product = mysqli_fetch_assoc($result);
         echo json_encode($product);
+    }  elseif (isset($_GET['recommend'])) {  // Search for recommended products based on category and exclude current product (Advanced teammember tuan)
+        $category = mysqli_real_escape_string($conn, $_GET['category']);
+        $exclude = (int)$_GET['exclude'];
+
+        $result = mysqli_query($conn,
+            "SELECT * FROM products 
+            WHERE category = '$category' 
+            AND id != $exclude 
+            ORDER BY RAND() 
+            LIMIT 4"
+        );
+        $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        echo json_encode($products); 
 
     } elseif (isset($_GET['category'])) {
         $category = $_GET['category'];
