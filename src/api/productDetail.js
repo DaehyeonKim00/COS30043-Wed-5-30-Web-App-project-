@@ -10,3 +10,13 @@ export function getProductById(productId) {
       throw error
     })
 }
+// Advanced feature (tuan)
+export function getRecommendedProducts(category, excludeId) {
+  return fetch(productsApiUrl + '?recommend=1&category=' + encodeURIComponent(category) + '&exclude=' + excludeId)
+    .then(response => response.json())
+    .catch(error => {
+      console.error('Error fetching recommendations:', error)
+      throw error
+    })
+}
+
