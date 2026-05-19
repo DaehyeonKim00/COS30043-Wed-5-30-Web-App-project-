@@ -61,7 +61,7 @@
             </button>
 
             <!-- Add to Cart button -->
-            <button class="btn btn-dark" :disabled="product.stock === 0">
+            <button class="btn btn-dark" :disabled="product.stock === 0" @click="addToCartHandler">
               Add to Cart
             </button>
 
@@ -118,6 +118,7 @@
 </template>
 
 <script>
+import { getCart, addToCart } from '../api/cart.js'
 import { getWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist.js'
 import { getProductById, getRecommendedProducts } from '../api/productDetail.js' // For advanced feature (tuan)
 
@@ -138,30 +139,31 @@ export default {
     var self = this
     var productId = self.$route.params.id
     self.user = JSON.parse(localStorage.getItem('user'))
-
+    
     self.isLoading = true
     getProductById(productId)
-      .then(data => {
-        self.product = data
-        self.isLoading = false
-
-        // Check wishlist status if user is logged in
-        if (self.user) {
-          getWishlist(self.user.id)
-            .then(items => {
-              self.inWishlist = items.some(item => item.product_id == productId)
-            })
-        }
-      })
-      .catch(error => {
-        self.err = 'Failed to load product. Please try again later.'
-        self.isLoading = false
-      })
-    // Fetch recommended products  
-    getRecommendedProducts(data.category, productId)
+    .then(data => {
+      self.product = data
+      self.isLoading = false
+      
+      // Check wishlist status if user is logged in
+      if (self.user) {
+        getWishlist(self.user.id)
+        .then(items => {
+          self.inWishlist = items.some(item => item.product_id == productId)
+        })
+      }
+      
+      // Fetch recommended products based on the same category (advanced feature - tuan)
+      getRecommendedProducts(data.category, productId)
       .then(products => {
         self.recommendedProducts = products
       })
+    })
+    .catch(error => {
+      self.err = 'Failed to load product. Please try again later.'
+      self.isLoading = false
+    })
   },
   methods: {
     toggleWishlist() {
@@ -191,7 +193,23 @@ export default {
             self.err = 'Failed to update wishlist.'
           })
       }
+    },
+    addToCartHandler() {
+    var self = this
+    if (!self.user) {
+      self.$router.push('/login')
+      return
     }
+    addToCart(self.user.id, self.product.id, 1)
+      .then(data => {
+        if (data.success) {
+          self.msg = 'Added to cart!'
+        }
+      })
+      .catch(error => {
+        self.err = 'Failed to add to cart.'
+      })
+  }
   }
 }
 </script>

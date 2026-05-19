@@ -120,22 +120,26 @@ export default {
 
       // ===== TEMPORARY (login not implemented yet) =====
       // Using a fixed user id so the page can be tested against the DB.
-      userId: 1
+      //userId: 1
       // ===== REAL CODE (use after login is implemented) =====
       // Read the logged-in user saved at login time:
-      // userId: JSON.parse(localStorage.getItem('user')).id
+      userId: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).id : null      
       // (or from Vuex: this.$store.state.user.id)
     }
   },
   mounted() {
     var self = this
 
+    if (!self.userId) {
+    self.$router.push('/login')
+    return
+    }
+
     // Load profile
     self.isLoading = true
     getUserInfo(self.userId)
       .then(data => {
-        // api_mypage.php returns an array of user rows
-        self.user = data[0]
+        self.user = data
         self.isLoading = false
       })
       .catch(error => {
