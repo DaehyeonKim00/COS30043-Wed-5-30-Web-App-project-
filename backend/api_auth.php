@@ -16,7 +16,7 @@ switch ($method) {
       $email = mysqli_real_escape_string($conn, $input['email']);
       $result = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
       $user = mysqli_fetch_assoc($result);
-      if ($user && password_verify($input['password'], $user['password'])) {
+      if ($user && md5($input['password']) === $user['password']) { // Replace 
         unset($user['password']);
         echo json_encode($user);
       } else {
@@ -25,7 +25,7 @@ switch ($method) {
     } else if (isset($input['action']) && $input['action'] === 'register') {
       $name = mysqli_real_escape_string($conn, $input['name']);
       $email = mysqli_real_escape_string($conn, $input['email']);
-      $password = password_hash($input['password'], PASSWORD_DEFAULT);
+      $password = md5($input['password']); // Replace password_hash with md5 for compatibility
       $check = mysqli_query($conn, "SELECT id FROM users WHERE email = '$email'");
       if (mysqli_num_rows($check) > 0) {
         echo json_encode(['error' => 'Email already exists']);
