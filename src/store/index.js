@@ -22,6 +22,16 @@ export const store = createStore({
       state.isLoggedIn = false
       state.cart = []
       state.wishlist = []
+    },
+
+    setCart(state, cart) {
+      state.cart = cart
+    },
+    addToCart(state, product) {
+      state.cart.push(product)
+    },
+    removeFromCart(state, productId) {
+      state.cart = state.cart.filter(item => item.id !== productId)
     }
 
     // ===== Below are example mutations for Phase 3+ (not used yet) =====
