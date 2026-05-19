@@ -54,7 +54,7 @@
 </template>
  
 <script>
-import { getCart, addToCart, removeFromCart } from '../api/cart.js'
+import { getCart, addToCart, removeFromCart, updateCartQuantity } from '../api/cart.js'
  
 export default {
   name: 'Cart',
@@ -102,28 +102,32 @@ export default {
     },
     increaseQty(item) {
       var self = this
-      // No PUT in api_cart.php — delete then re-add with new quantity
-      removeFromCart(item.id)
-        .then(function() {
-          return addToCart(self.user.id, item.product_id, item.quantity + 1)
-        })
-        .then(function() {
-          item.quantity += 1
+      if (parseInt(item.quantity) >= parseInt(item.stock)) {
+        self.err = 'Cannot exceed available stock (' + item.stock + ' available)'
+        return
+      }
+      var newQty = parseInt(item.quantity) + 1
+      updateCartQuantity(item.id, newQty)
+        .then(function(data) {
+          if (data.success) {
+            item.quantity = newQty
+            self.err = ''
+          }
         })
         .catch(function() { self.err = 'Failed to update quantity.' })
     },
     decreaseQty(item) {
       var self = this
-      if (item.quantity <= 1) {
+      if (parseInt(item.quantity) <= 1) {
         self.deleteItem(item.id)
         return
       }
-      removeFromCart(item.id)
-        .then(function() {
-          return addToCart(self.user.id, item.product_id, item.quantity - 1)
-        })
-        .then(function() {
-          item.quantity -= 1
+      var newQty = parseInt(item.quantity) - 1
+      updateCartQuantity(item.id, newQty)
+        .then(function(data) {
+          if (data.success) {
+            item.quantity = newQty
+          }
         })
         .catch(function() { self.err = 'Failed to update quantity.' })
     }
