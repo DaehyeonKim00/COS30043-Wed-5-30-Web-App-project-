@@ -82,12 +82,45 @@
 
     </div>
 
+    <!-- Recommended Products - For avdanced feature --> 
+    <div v-if="recommendedProducts.length > 0" class="mt-5">
+      <h4 class="fw-bold mb-4">You May Also Like</h4>
+      <div class="row g-4">
+        <div
+          v-for="item in recommendedProducts"
+          :key="item.id"
+          class="col-12 col-sm-6 col-md-3"
+        >
+          <div class="card h-100 shadow-sm">
+            <img
+              :src="item.image"
+              :alt="item.name"
+              class="card-img-top"
+              style="height: 180px; object-fit: cover;"
+            />
+            <div class="card-body d-flex flex-column">
+              <p class="text-muted small mb-1">{{ item.category }}</p>
+              <h6 class="card-title fw-bold">{{ item.name }}</h6>
+              <p class="mt-auto fw-bold">${{ item.price }}</p>
+              <router-link
+                :to="'/products/' + item.id"
+                class="btn btn-dark btn-sm mt-2"
+              >
+                View Details
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
 import { getProductById } from '../api/productDetail.js'
 import { getWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist.js'
+import { getProductById, getRecommendedProducts } from '../api/productDetail.js' // For advanced feature (tuan)
 
 export default {
   name: 'ProductDetail',
@@ -98,7 +131,8 @@ export default {
       err: '',
       msg: '',
       user: null,
-      inWishlist: false
+      inWishlist: false,
+      recommendedProducts: [] // For advanced feature (tuan)
     }
   },
   mounted() {
@@ -123,6 +157,11 @@ export default {
       .catch(error => {
         self.err = 'Failed to load product. Please try again later.'
         self.isLoading = false
+      })
+    // Fetch recommended products  
+    getRecommendedProducts(data.category, productId)
+      .then(products => {
+        self.recommendedProducts = products
       })
   },
   methods: {
