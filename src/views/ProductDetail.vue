@@ -118,7 +118,6 @@
 </template>
 
 <script>
-import { getProductById } from '../api/productDetail.js'
 import { getWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist.js'
 import { getProductById, getRecommendedProducts } from '../api/productDetail.js' // For advanced feature (tuan)
 
