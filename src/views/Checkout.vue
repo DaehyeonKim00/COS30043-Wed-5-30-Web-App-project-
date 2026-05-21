@@ -153,9 +153,7 @@ export default {
   },
   computed: {
     totalPrice() {
-      return this.items.reduce(function(sum, item) {
-        return sum + item.price * item.quantity
-      }, 0).toFixed(2)
+      return this.items.reduce( (sum, item) => sum + item.price * item.quantity, 0).toFixed(2)
     }
   },
   mounted() {
@@ -170,11 +168,11 @@ export default {
 
     self.isLoading = true
     getCart(self.user.id)
-      .then(function(data) {
+      .then( data => {
         self.items = Array.isArray(data) ? data : []
         self.isLoading = false
       })
-      .catch(function() {
+      .catch(error => {
         self.err = 'Failed to load cart.'
         self.isLoading = false
       })
@@ -205,31 +203,29 @@ export default {
         return
       }
 
-      var payload = self.items.map(function(it) {
-        return {
-          product_id: it.product_id,
-          quantity: it.quantity,
-          price: it.price
-        }
-      })
+      var payload = self.items.map( it => ({
+        product_id: it.product_id,
+        quantity: it.quantity,
+        price: it.price
+      }))
 
       self.isSubmitting = true
       placeOrder(self.user.id, self.totalPrice, payload)
-        .then(function(data) {
+        .then( data => {
           self.isSubmitting = false
           console.log('Checkout response:', data)
           if (data && data.success) {
             self.msg = 'Order #' + data.order_id + ' placed successfully! Redirecting...'
             // Refresh Vuex cart so Navbar count resets to 0
             self.$store.dispatch('fetchCart')
-            setTimeout(function() {
+            setTimeout( () => {
               self.$router.push('/orderhistory')
             }, 1500)
           } else {
             self.submitErr = (data && data.error) ? data.error : 'Failed to place order.'
           }
         })
-        .catch(function(error) {
+        .catch(error => {
           self.isSubmitting = false
           console.error('Checkout error:', error)
           self.submitErr = 'Failed to place order. Please try again.'

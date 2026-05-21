@@ -61,7 +61,7 @@ export default {
 
       self.isLoading = true
       loginUser(self.form.email, self.form.password)
-        .then(function(user) {
+        .then( user => {
           self.isLoading = false
           if (!user || user.error) {
             self.err = 'Invalid email or password.'
@@ -75,7 +75,7 @@ export default {
             self.$router.push('/')
           }
         })
-        .catch(function() {
+        .catch(error => {
           self.isLoading = false
           self.err = 'Login failed. Please try again.'
         })

@@ -79,16 +79,16 @@ export default {
  
       self.isLoading = true
       registerUser(self.form.name, self.form.email, self.form.password)
-        .then(function(data) {
+        .then( data => {
           self.isLoading = false
           if (data && data.error) {
             self.err = data.error
           } else {
             self.msg = 'Account created successfully! Redirecting to login...'
-            setTimeout(function() { self.$router.push('/login') }, 1500)
+            setTimeout( () => { self.$router.push('/login') }, 1500)
           }
         })
-        .catch(function() {
+        .catch(error => {
           self.isLoading = false
           self.err = 'Registration failed. Please try again.'
         })

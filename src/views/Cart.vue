@@ -74,9 +74,7 @@ export default {
   },
   computed: {
     totalPrice() {
-      return this.items.reduce(function(sum, item) {
-        return sum + item.price * item.quantity
-      }, 0).toFixed(2)
+      return this.items.reduce( (sum, item) => sum + item.price * item.quantity, 0).toFixed(2)
     }
   },
   mounted() {
@@ -88,13 +86,13 @@ export default {
     }
     self.isLoading = true
     getCart(self.user.id)
-      .then(function(data) {
+      .then( data => {
         self.items = data
         self.isLoading = false
         // Keep Vuex in sync (Navbar count etc.)
         self.$store.commit('setCart', data)
       })
-      .catch(function() {
+      .catch(error => {
         self.err = 'Failed to load cart.'
         self.isLoading = false
       })
@@ -103,11 +101,11 @@ export default {
     deleteItem(cartId) {
       var self = this
       removeFromCart(cartId)
-        .then(function() {
-          self.items = self.items.filter(function(i) { return i.id !== cartId })
+        .then( data => {
+          self.items = self.items.filter( i => i.id !== cartId )
           self.$store.dispatch('fetchCart')
         })
-        .catch(function() { self.err = 'Failed to remove item.' })
+        .catch(error => { self.err = 'Failed to remove item.' })
     },
     increaseQty(item) {
       var self = this
@@ -117,14 +115,14 @@ export default {
       }
       var newQty = parseInt(item.quantity) + 1
       updateCartQuantity(item.id, newQty)
-        .then(function(data) {
+        .then( data => {
           if (data.success) {
             item.quantity = newQty
             self.err = ''
             self.$store.dispatch('fetchCart')
           }
         })
-        .catch(function() { self.err = 'Failed to update quantity.' })
+        .catch(error => { self.err = 'Failed to update quantity.' })
     },
     decreaseQty(item) {
       var self = this
@@ -134,13 +132,13 @@ export default {
       }
       var newQty = parseInt(item.quantity) - 1
       updateCartQuantity(item.id, newQty)
-        .then(function(data) {
+        .then( data => {
           if (data.success) {
             item.quantity = newQty
             self.$store.dispatch('fetchCart')
           }
         })
-        .catch(function() { self.err = 'Failed to update quantity.' })
+        .catch(error => { self.err = 'Failed to update quantity.' })
     }
   }
 }

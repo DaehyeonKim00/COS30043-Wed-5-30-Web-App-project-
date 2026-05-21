@@ -186,9 +186,7 @@ export default {
       removeWishlistById(wishlistId)
         .then(data => {
           if (data && data.success) {
-            self.wishlist = self.wishlist.filter(function(w) {
-              return w.id !== wishlistId
-            })
+            self.wishlist = self.wishlist.filter( w => w.id !== wishlistId )
           } else {
             self.wishlistErr = (data && data.error) || 'Failed to remove item.'
           }

@@ -144,7 +144,7 @@ export default {
     // so the dropdown always reflects every category actually used.
     categories() {
       var set = {}
-      this.products.forEach(function(p) {
+      this.products.forEach( p => {
         if (p.category) set[p.category] = true
       })
       return Object.keys(set).sort()
