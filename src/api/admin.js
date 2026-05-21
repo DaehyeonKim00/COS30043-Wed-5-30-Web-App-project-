@@ -1,4 +1,4 @@
-var adminApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_admin.php'
+const adminApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_admin.php'
 
 export function getProducts() {
   return fetch(adminApiUrl)

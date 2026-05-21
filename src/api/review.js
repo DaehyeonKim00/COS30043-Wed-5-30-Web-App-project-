@@ -1,4 +1,4 @@
-var reviewApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_review.php'
+const reviewApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_review.php'
 
 export function getReviews(productId) {
   return fetch(reviewApiUrl + '?product_id=' + productId)

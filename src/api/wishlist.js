@@ -1,4 +1,4 @@
-var wishlistApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_wishlist.php'
+const wishlistApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_wishlist.php'
 
 export function getWishlist(userId) {
   return fetch(wishlistApiUrl + '?user_id=' + userId)

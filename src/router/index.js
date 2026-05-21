@@ -55,8 +55,6 @@ const routes = [
     name: 'Login',
     component: Login
   },
-
-  // Dinupa pages
   {
     path: '/about',
     name: 'About',

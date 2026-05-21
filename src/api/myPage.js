@@ -1,4 +1,4 @@
-var myPageApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_mypage.php'
+const myPageApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_mypage.php'
 
 export function getUserInfo(userId) {
   return fetch(myPageApiUrl + '?user_id=' + userId)
