@@ -96,17 +96,14 @@ const router = createRouter({
 })
 
 // Route guard: block non-admin users from admin-only pages
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   if (to.meta.requiresAdmin) {
     var user = store.state.user
-    if (user && user.role === 'admin') {
-      next()
-    } else {
-      next('/home')
+    if (!user || user.role !== 'admin') {
+      return '/home'
     }
-  } else {
-    next()
   }
+  return true
 })
 
 export default router
