@@ -1,13 +1,13 @@
 <template>
   <div class="container mt-5" style="max-width: 500px">
-    <h2 class="mb-4">Create Account</h2>
- 
-    <div v-if="err" class="alert alert-danger">{{ err }}</div>
+    <PageHeader title="Create Account" />
+
+    <ErrorAlert :message="err" />
     <div v-if="msg" class="alert alert-success">{{ msg }}</div>
  
     <div class="mb-3">
       <label class="form-label">Name</label>
-      <input v-model="form.name" type="text" class="form-control" placeholder="Your name" />
+      <input v-model="form.name" type="text" class="form-control" placeholder="Letters only, min 2 characters" />
     </div>
  
     <div class="mb-3">
@@ -32,9 +32,12 @@
  
 <script>
 import { registerUser } from '../api/register.js'
- 
+import ErrorAlert from '../components/ErrorAlert.vue'
+import PageHeader from '../components/PageHeader.vue'
+
 export default {
   name: 'Register',
+  components: { ErrorAlert, PageHeader },
   data() {
     return {
       form: { name: '', email: '', password: '' },
@@ -52,6 +55,16 @@ export default {
       // T7 — Form Validation
       if (!self.form.name || !self.form.email || !self.form.password) {
         self.err = 'All fields are required.'
+        return
+      }
+      // Name: letters only (a-z, A-Z), no digits, no special chars, no spaces, min 2
+      var nameRegex = /^[A-Za-z]+$/
+      if (!nameRegex.test(self.form.name)) {
+        self.err = 'Name must contain letters only (no numbers, spaces or special characters).'
+        return
+      }
+      if (self.form.name.length < 2) {
+        self.err = 'Name must be at least 2 characters.'
         return
       }
       var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -84,5 +97,3 @@ export default {
 }
 </script>
  
-<style scoped>
-</style>

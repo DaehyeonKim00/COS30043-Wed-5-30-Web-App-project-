@@ -57,16 +57,10 @@
     </div>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="text-center py-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+    <LoadingSpinner v-if="isLoading" />
 
     <!-- Error state -->
-    <div v-else-if="err" class="alert alert-danger">
-      {{ err }}
-    </div>
+    <ErrorAlert v-else-if="err" :message="err" />
 
     <!-- Products grid + pagination -->
     <div v-else>
@@ -104,12 +98,16 @@
 import { getProducts } from '../api/productList.js'
 import ProductCard from '../components/ProductCard.vue'
 import PaginationBar, { calcPageCount, getPaginatedItems } from '../components/PaginationBar.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ErrorAlert from '../components/ErrorAlert.vue'
 
 export default {
   name: 'ProductList',
   components: {
     ProductCard,
-    PaginationBar
+    PaginationBar,
+    LoadingSpinner,
+    ErrorAlert
   },
   data() {
     return {
@@ -202,6 +200,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>

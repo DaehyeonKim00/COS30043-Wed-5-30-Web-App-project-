@@ -1,6 +1,6 @@
 <template>
   <div class="container py-5">
-    <h1 class="mb-4">Admin Product Management</h1>
+    <PageHeader title="Admin Product Management" />
 
     <!-- Product form -->
     <div class="card shadow-sm mb-4">
@@ -14,12 +14,18 @@
 
         <div class="mb-3">
           <label class="form-label">Category</label>
-          <select v-model="form.category" class="form-select">
-            <option>Guitar</option>
-            <option>Drums</option>
-            <option>Keyboard</option>
-            <option>Accessories</option>
+          <select v-model="form.category" class="form-select mb-2">
+            <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+            <option value="__new__">+ Add new category…</option>
           </select>
+          <!-- Show free-text input when user picks "Add new category" -->
+          <input
+            v-if="form.category === '__new__'"
+            v-model="newCategory"
+            type="text"
+            class="form-control"
+            placeholder="Enter new category name"
+          />
         </div>
 
         <div class="mb-3">
@@ -54,54 +60,50 @@
           Cancel
         </button>
 
-        <p v-if="msg" class="text-success mt-3">{{ msg }}</p>
+        <SuccessMessage :message="msg" />
       </div>
     </div>
 
     <h3>Product List</h3>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="text-center py-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+    <LoadingSpinner v-if="isLoading" />
 
     <!-- Error state -->
-    <div v-else-if="err" class="alert alert-danger">
-      {{ err }}
+    <ErrorAlert v-else-if="err" :message="err" />
+
+    <!-- Product table (responsive: horizontal scroll on small screens) -->
+    <div v-else class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr v-for="product in products" :key="product.id">
+            <td>
+              <img v-if="product.image" :src="product.image" class="table-img">
+              <span v-else>No image</span>
+            </td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.category }}</td>
+            <td>${{ product.price }}</td>
+            <td>{{ product.stock }}</td>
+            <td class="text-nowrap">
+              <button class="btn btn-sm btn-primary me-2 mb-1" @click="editProduct(product)">Edit</button>
+              <button class="btn btn-sm btn-danger mb-1" @click="removeProduct(product.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <!-- Product table -->
-    <table v-else class="table table-bordered align-middle">
-      <thead>
-        <tr>
-          <th>Image</th>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Price</th>
-          <th>Stock</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr v-for="product in products" :key="product.id">
-          <td>
-            <img v-if="product.image" :src="product.image" class="table-img">
-            <span v-else>No image</span>
-          </td>
-          <td>{{ product.name }}</td>
-          <td>{{ product.category }}</td>
-          <td>${{ product.price }}</td>
-          <td>{{ product.stock }}</td>
-          <td>
-            <button class="btn btn-sm btn-primary me-2" @click="editProduct(product)">Edit</button>
-            <button class="btn btn-sm btn-danger" @click="removeProduct(product.id)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
 
     <p v-if="!isLoading && !err && products.length === 0" class="text-muted">
       No products found.
@@ -111,9 +113,14 @@
 
 <script>
 import { getProducts, addProduct, updateProduct, deleteProduct } from '../api/admin.js'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ErrorAlert from '../components/ErrorAlert.vue'
+import SuccessMessage from '../components/SuccessMessage.vue'
+import PageHeader from '../components/PageHeader.vue'
 
 export default {
   name: 'Admin',
+  components: { LoadingSpinner, ErrorAlert, SuccessMessage, PageHeader },
   data() {
     return {
       products: [],
@@ -121,14 +128,26 @@ export default {
       err: '',
       msg: '',
       editingId: null,
+      newCategory: '',
       form: {
         name: '',
-        category: 'Guitar',
+        category: '',
         description: '',
         price: 0,
         stock: 0,
         image: ''
       }
+    }
+  },
+  computed: {
+    // Derive the category list from the products already in the DB,
+    // so the dropdown always reflects every category actually used.
+    categories() {
+      var set = {}
+      this.products.forEach(function(p) {
+        if (p.category) set[p.category] = true
+      })
+      return Object.keys(set).sort()
     }
   },
   mounted() {
@@ -142,6 +161,10 @@ export default {
         .then(data => {
           self.products = data
           self.isLoading = false
+          // Pre-select the first category once data is available
+          if (!self.form.category && self.categories.length) {
+            self.form.category = self.categories[0]
+          }
         })
         .catch(error => {
           self.err = 'Failed to load products. Please try again later.'
@@ -150,6 +173,17 @@ export default {
     },
     saveProduct() {
       var self = this
+
+      // Resolve "Add new category" → actual category name
+      if (self.form.category === '__new__') {
+        var typed = (self.newCategory || '').trim()
+        if (!typed) {
+          alert('Please enter a name for the new category.')
+          return
+        }
+        self.form.category = typed
+      }
+
       if (!self.form.name || self.form.price <= 0) {
         alert('Please fill product name and price.')
         return
@@ -204,9 +238,10 @@ export default {
     },
     resetForm() {
       this.editingId = null
+      this.newCategory = ''
       this.form = {
         name: '',
-        category: 'Guitar',
+        category: this.categories[0] || '',
         description: '',
         price: 0,
         stock: 0,
@@ -217,19 +252,3 @@ export default {
 }
 </script>
 
-<style scoped>
-.preview-img {
-  width: 220px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-
-.table-img {
-  width: 70px;
-  height: 55px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-</style>

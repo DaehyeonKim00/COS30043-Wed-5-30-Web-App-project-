@@ -1,15 +1,15 @@
 <template>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-xl navbar-dark wood-navbar sticky-top">
     <div class="container">
       <div class="row w-100 align-items-center">
 
         <!-- Logo -->
-        <div class="col-8 col-md-3 col-lg-2">
+        <div class="col-8 col-xl-2">
           <router-link class="navbar-brand mb-0" to="/">SwinMusic Shop</router-link>
         </div>
 
-        <!-- Hamburger button (mobile) -->
-        <div class="col-4 d-md-none d-flex justify-content-end">
+        <!-- Hamburger button (mobile only: < 768px) -->
+        <div class="col-4 d-xl-none d-flex justify-content-end">
           <button
             class="navbar-toggler"
             type="button"
@@ -23,12 +23,12 @@
         </div>
 
         <!-- Menu -->
-        <div class="col-12 col-md-9 col-lg-10">
+        <div class="col-12 col-xl-10">
           <div class="collapse navbar-collapse" id="navbarMenu">
-            <div class="row w-100 pt-3 pt-md-0 align-items-center">
+            <div class="row w-100 pt-3 pt-xl-0 align-items-center">
 
               <!-- Left links -->
-              <div class="col-12 col-md-4 col-lg-4">
+              <div class="col-12 col-xl-5">
                 <ul class="navbar-nav">
                   <li class="nav-item">
                     <router-link class="nav-link" to="/">Home</router-link>
@@ -52,8 +52,8 @@
                 </ul>
               </div>
 
-              <!-- Search bar -->
-              <div class="col-12 col-md-4 col-lg-5 my-2 my-md-0">
+              <!-- Search bar (visible on mobile collapse + desktop xl) -->
+              <div class="col-12 col-xl-3 my-2 my-xl-0">
                 <form class="d-flex" @submit.prevent="submitSearch">
                   <input
                     v-model="searchKeyword"
@@ -62,13 +62,13 @@
                     placeholder="Search products..."
                     aria-label="Search"
                   />
-                  <button class="btn btn-outline-light btn-sm text-nowrap" type="submit">Search</button>
+                  <button class="btn btn-primary btn-sm text-nowrap" type="submit">Search</button>
                 </form>
               </div>
 
               <!-- Right links -->
-              <div class="col-12 col-md-4 col-lg-3 mt-2 mt-md-0">
-                <ul class="navbar-nav justify-content-md-end">
+              <div class="col-12 col-xl-4 mt-2 mt-xl-0">
+                <ul class="navbar-nav justify-content-xl-end">
                   <!-- When not logged in -->
                   <template v-if="!$store.state.isLoggedIn">
                     <li class="nav-item">
@@ -81,6 +81,11 @@
 
                   <!-- When logged in -->
                   <template v-else>
+                    <li class="nav-item">
+                      <span class="nav-link disabled">
+                        Hi, {{ $store.state.user.name }}
+                      </span>
+                    </li>
                     <li class="nav-item">
                       <router-link class="nav-link" to="/cart">
                         Cart ({{ $store.state.cart.length }})
@@ -122,12 +127,10 @@ export default {
       }
     },
     logout() {
+      localStorage.removeItem('user')
       this.$store.commit('logout')
       this.$router.push('/login')
     }
   }
 }
 </script>
-
-<style scoped>
-</style>

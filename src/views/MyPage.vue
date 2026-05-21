@@ -1,18 +1,12 @@
 <template>
   <div class="container py-5">
-    <h1 class="mb-4">My Page</h1>
+    <PageHeader title="My Page" />
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="text-center py-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+    <LoadingSpinner v-if="isLoading" />
 
     <!-- Error state -->
-    <div v-else-if="err" class="alert alert-danger">
-      {{ err }}
-    </div>
+    <ErrorAlert v-else-if="err" :message="err" />
 
     <!-- Profile + Wishlist -->
     <div v-else class="row g-4">
@@ -37,7 +31,7 @@
               Save Changes
             </button>
 
-            <p v-if="msg" class="text-success mt-3">{{ msg }}</p>
+            <SuccessMessage :message="msg" />
           </div>
         </div>
       </div>
@@ -70,12 +64,19 @@
                 <li
                   v-for="item in wishlist"
                   :key="item.id"
-                  class="list-group-item d-flex justify-content-between align-items-center"
+                  class="list-group-item d-flex justify-content-between align-items-center gap-2"
                 >
-                  <router-link :to="'/products/' + item.product_id">
+                  <router-link :to="'/products/' + item.product_id" class="flex-grow-1">
                     {{ item.name }}
                   </router-link>
                   <span>${{ item.price }}</span>
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    :disabled="removingId === item.id"
+                    @click="removeWishlistItem(item.id)"
+                  >
+                    {{ removingId === item.id ? '...' : 'Remove' }}
+                  </button>
                 </li>
               </ul>
             </div>
@@ -100,10 +101,16 @@
 
 <script>
 import { getUserInfo, updateUserInfo } from '../api/myPage.js'
-import { getWishlist } from '../api/wishlist.js'
+import { getWishlist, removeWishlistById } from '../api/wishlist.js'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ErrorAlert from '../components/ErrorAlert.vue'
+import SuccessMessage from '../components/SuccessMessage.vue'
+import PageHeader from '../components/PageHeader.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 export default {
   name: 'MyPage',
+  components: { LoadingSpinner, ErrorAlert, SuccessMessage, PageHeader, EmptyState },
   data() {
     return {
       user: {
@@ -117,6 +124,7 @@ export default {
       wishlist: [],
       wishlistLoading: false,
       wishlistErr: '',
+      removingId: null,
 
       // ===== TEMPORARY (login not implemented yet) =====
       // Using a fixed user id so the page can be tested against the DB.
@@ -169,10 +177,28 @@ export default {
         .catch(error => {
           self.err = 'Failed to update profile.'
         })
+    },
+    removeWishlistItem(wishlistId) {
+      var self = this
+      self.removingId = wishlistId
+      self.wishlistErr = ''
+
+      removeWishlistById(wishlistId)
+        .then(data => {
+          if (data && data.success) {
+            self.wishlist = self.wishlist.filter(function(w) {
+              return w.id !== wishlistId
+            })
+          } else {
+            self.wishlistErr = (data && data.error) || 'Failed to remove item.'
+          }
+          self.removingId = null
+        })
+        .catch(error => {
+          self.wishlistErr = 'Failed to remove item.'
+          self.removingId = null
+        })
     }
   }
 }
 </script>
-
-<style scoped>
-</style>

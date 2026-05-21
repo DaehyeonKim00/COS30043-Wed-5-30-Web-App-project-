@@ -1,296 +1,261 @@
+/* ============================================================
+   SwinMusic Shop — Global Stylesheet (Wood / Caramel Theme)
+   Built on top of Bootstrap 5. All app-wide styling lives here
+   so .vue files stay clean (no <style scoped> needed).
+   ============================================================ */
+
+/* ---------- Theme tokens ---------- */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --ink:        #1f1a16;
+  --ink-soft:   #5b4a3f;
+  --bg:         #f0e6d2;   /* page warm beige */
+  --surface:    #ffffff;
+  --line:       #ece2d4;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --wood-1:     #f3e7d4;
+  --wood-2:     #d9b48b;
+  --wood-3:     #a8744a;
+  --wood-4:     #6b3f24;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --wood-dark1: #3a2418;   /* navbar/footer top */
+  --wood-dark2: #2a1810;   /* navbar bottom */
+  --wood-dark3: #1a0f08;   /* footer bottom */
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --accent:     #c97b3c;
+  --accent-2:   #e8a26b;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+/* ---------- Base ---------- */
+html, body, #app {
+  height: 100%;
+  margin: 0;
 }
 
 body {
-  margin: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  /* Bootstrap default font stack */
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ink);
+  font-weight: 700;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+.text-muted {
+  color: var(--ink-soft) !important;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+a {
+  color: var(--wood-4);
+  text-decoration: none;
 }
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
-
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
+a:hover {
   color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
-
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
 }
 
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
-}
-
-#app {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+/* ---------- App layout (sticky footer) ---------- */
+#app-layout {
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  min-height: 100vh;
 }
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+/* ---------- Bootstrap overrides ---------- */
+.btn-primary {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--accent-2) !important;
+  border-color: var(--accent-2) !important;
 }
 
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+.btn-dark {
+  background-color: var(--ink) !important;
+  border-color: var(--ink) !important;
+}
+.btn-dark:hover {
+  background-color: #000 !important;
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+.btn-outline-dark {
+  color: var(--ink) !important;
+  border-color: var(--ink) !important;
+}
+.btn-outline-dark:hover {
+  background-color: var(--ink) !important;
+  color: var(--bg) !important;
 }
 
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
+.btn-outline-secondary {
+  color: var(--wood-4) !important;
+  border-color: var(--wood-2) !important;
+}
+.btn-outline-secondary:hover {
+  background-color: var(--wood-1) !important;
+  color: var(--wood-4) !important;
+  border-color: var(--wood-2) !important;
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.btn-success {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+.btn-success:hover {
+  background-color: var(--accent-2) !important;
+  border-color: var(--accent-2) !important;
 }
 
-.ticks {
-  position: relative;
+.card {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+}
+
+.badge.bg-success {
+  background-color: var(--accent) !important;
+}
+.badge.bg-secondary {
+  background-color: var(--wood-3) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 0.2rem rgba(201, 123, 60, 0.18) !important;
+}
+
+/* ---------- Navbar (dark roasted wood) ---------- */
+.wood-navbar {
+  background: linear-gradient(180deg, var(--wood-dark1) 0%, var(--wood-dark2) 100%);
+  border-bottom: 1px solid var(--wood-dark3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+.wood-navbar .navbar-brand {
+  font-weight: 800;
+  color: var(--wood-1) !important;
+  font-size: 1.25rem;
+}
+.wood-navbar .nav-link {
+  color: var(--wood-1) !important;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem !important;
+  margin: 0 1px;
+  font-size: 0.95rem;
+}
+.wood-navbar .nav-link:hover {
+  background-color: rgba(243, 231, 212, 0.1);
+  color: var(--accent-2) !important;
+}
+.wood-navbar .nav-link.router-link-exact-active {
+  color: var(--accent-2) !important;
+}
+.wood-navbar .nav-link.disabled {
+  color: var(--wood-2) !important;
+  font-weight: 600;
+}
+.wood-navbar .navbar-toggler {
+  border-color: rgba(243, 231, 212, 0.2);
+}
+
+/* ---------- Footer (dark roasted wood) ---------- */
+.wood-footer {
+  background: linear-gradient(180deg, var(--wood-dark2) 0%, var(--wood-dark3) 100%);
+  border-top: 1px solid var(--wood-dark3);
+  color: var(--wood-1);
+}
+.wood-footer h5 {
+  color: var(--accent-2);
+  font-weight: 700;
+}
+.wood-footer p {
+  color: var(--wood-2);
+}
+.wood-footer .border-top {
+  border-color: rgba(243, 231, 212, 0.15) !important;
+}
+.wood-footer .footer-link {
+  color: var(--wood-1);
+  font-weight: 500;
+}
+.wood-footer .footer-link:hover {
+  color: var(--accent-2);
+  text-decoration: underline;
+}
+
+/* ---------- Hero (Home, About) ---------- */
+.hero-latte {
+  background: linear-gradient(135deg, var(--wood-1) 0%, #e8d4b8 50%, var(--wood-2) 100%);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 24px !important;
+  box-shadow: 0 4px 20px rgba(107, 63, 36, 0.08);
+}
+.hero-latte h1 {
+  color: var(--ink);
+}
+.hero-latte .lead {
+  color: var(--ink-soft);
+}
+
+/* Dark brand card (About page accent block) */
+.brand-card {
+  background: linear-gradient(135deg, var(--wood-dark1) 0%, var(--wood-dark2) 100%);
+  color: var(--wood-1);
+  border: 1px solid var(--wood-dark3);
+  box-shadow: 0 6px 18px rgba(43, 24, 16, 0.25);
+}
+.brand-card .display-6 {
+  color: var(--accent-2);
+}
+.brand-card .brand-sub {
+  color: var(--wood-2);
+}
+
+/* ---------- ProductDetail ---------- */
+.product-image {
+  max-height: 450px;
+  object-fit: cover;
+}
+
+/* ---------- Review (product thumbnail in each review card) ---------- */
+.review-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+}
+
+/* ---------- Cart (item thumbnail) ---------- */
+.cart-thumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* ---------- ProductCard ---------- */
+.product-card .card-img-top {
+  height: 220px;
+  object-fit: cover;
+}
+
+/* ---------- Admin ---------- */
+.preview-img {
   width: 100%;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
-
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
+  max-width: 220px;
+  height: auto;
+  aspect-ratio: 220 / 160;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+.table-img {
+  width: 70px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 6px;
 }

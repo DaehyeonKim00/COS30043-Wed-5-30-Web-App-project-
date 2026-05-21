@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-dark text-white mt-5 pt-4 pb-3">
+  <footer class="wood-footer mt-5 pt-4 pb-3">
     <div class="container">
       <div class="row">
         <div class="col-12 col-md-4 mb-4">
@@ -26,9 +26,9 @@
 
         <div class="col-12 col-md-4 mb-4">
           <h5>Support</h5>
-          <p class="mb-1">Email: support@musicshop.com</p>
-          <p class="mb-1">Phone: +61 3 1234 5678</p>
-          <p class="mb-0">Open: Mon - Fri, 9:00 AM - 6:00 PM</p>
+          <p class="mb-1">Email: support@swinmusicshop.com</p>
+          <p class="mb-1">Phone: +61 3 9000 1234</p>
+          <p class="mb-0">Open: Mon - Fri, 9:00 AM - 5:00 PM</p>
         </div>
       </div>
 
@@ -46,14 +46,3 @@ export default {
   name: 'Footer'
 }
 </script>
-
-<style scoped>
-.footer-link {
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.footer-link:hover {
-  text-decoration: underline;
-}
-</style>

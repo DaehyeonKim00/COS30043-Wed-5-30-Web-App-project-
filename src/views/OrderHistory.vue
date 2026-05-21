@@ -1,18 +1,12 @@
 <template>
   <div class="container py-5">
-    <h1 class="mb-4">Order History</h1>
+    <PageHeader title="Order History" />
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="text-center py-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+    <LoadingSpinner v-if="isLoading" />
 
     <!-- Error state -->
-    <div v-else-if="err" class="alert alert-danger">
-      {{ err }}
-    </div>
+    <ErrorAlert v-else-if="err" :message="err" />
 
     <!-- Orders table -->
     <div v-else class="card shadow-sm">
@@ -45,8 +39,12 @@
 
 <script>
 import { getOrders } from '../api/orderHistory.js'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ErrorAlert from '../components/ErrorAlert.vue'
+import PageHeader from '../components/PageHeader.vue'
 
 export default {
+  components: { LoadingSpinner, ErrorAlert, PageHeader },
   name: 'OrderHistory',
   data() {
     return {
@@ -85,6 +83,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>

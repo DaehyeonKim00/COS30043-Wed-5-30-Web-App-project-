@@ -1,5 +1,5 @@
 <template>
-    <div class="card h-100">
+    <div class="card h-100 product-card">
         <!-- Product image -->
         <img
             :src="product.image"
@@ -35,9 +35,3 @@
     }
 </script>
 
-<style scoped>
-    .card-img-top {
-        height: 220px;
-        object-fit: cover;
-    }
-</style>

@@ -11,8 +11,24 @@ mysqli_set_charset($conn, 'utf8');
 
 switch ($method) {
   case 'GET':
-    $product_id = mysqli_real_escape_string($conn, $_GET['product_id']);
-    $result = mysqli_query($conn, "SELECT reviews.*, users.name FROM reviews JOIN users ON reviews.user_id = users.id WHERE reviews.product_id = '$product_id'");
+    // If product_id is provided, filter by it; otherwise return all reviews.
+    // Join with products to include the product name for "all reviews" view.
+    if (isset($_GET['product_id']) && $_GET['product_id'] !== '') {
+      $product_id = mysqli_real_escape_string($conn, $_GET['product_id']);
+      $sql = "SELECT reviews.*, users.name, products.name AS product_name, products.image AS product_image
+              FROM reviews
+              JOIN users ON reviews.user_id = users.id
+              JOIN products ON reviews.product_id = products.id
+              WHERE reviews.product_id = '$product_id'
+              ORDER BY reviews.created_at DESC";
+    } else {
+      $sql = "SELECT reviews.*, users.name, products.name AS product_name, products.image AS product_image
+              FROM reviews
+              JOIN users ON reviews.user_id = users.id
+              JOIN products ON reviews.product_id = products.id
+              ORDER BY reviews.created_at DESC";
+    }
+    $result = mysqli_query($conn, $sql);
     header('Content-Type: application/json');
     echo '[';
     for ($i = 0; $i < mysqli_num_rows($result); $i++) {

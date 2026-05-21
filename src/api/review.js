@@ -11,6 +11,17 @@ export function getReviews(productId) {
     })
 }
 
+export function getAllReviews() {
+  return fetch(reviewApiUrl)
+    .then(response => {
+      return response.json()
+    })
+    .catch(error => {
+      console.error('Error fetching all reviews:', error)
+      throw error
+    })
+}
+
 export function postReview(userId, productId, rating, comment) {
   return fetch(reviewApiUrl, {
     method: 'POST',

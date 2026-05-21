@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div id="app-layout">
     <Navbar />
-    <main class="container py-4">
+    <main class="container py-4 flex-grow-1">
       <router-view />
     </main>
     <Footer />

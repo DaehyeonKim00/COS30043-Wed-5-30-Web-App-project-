@@ -1,8 +1,8 @@
 <template>
   <div class="container mt-5" style="max-width: 500px">
-    <h2 class="mb-4">Login</h2>
+    <PageHeader title="Login" />
 
-    <div v-if="err" class="alert alert-danger">{{ err }}</div>
+    <ErrorAlert :message="err" />
 
     <div class="mb-3">
       <label class="form-label">Email</label>
@@ -11,7 +11,7 @@
 
     <div class="mb-3">
       <label class="form-label">Password</label>
-      <input v-model="form.password" type="password" class="form-control" placeholder="Your password" />
+      <input v-model="form.password" type="password" class="form-control" placeholder="Min. 8 characters" />
     </div>
 
     <button class="btn btn-primary w-100" @click="submit" :disabled="isLoading">
@@ -26,9 +26,12 @@
 
 <script>
 import { loginUser } from '../api/login.js'
+import ErrorAlert from '../components/ErrorAlert.vue'
+import PageHeader from '../components/PageHeader.vue'
 
 export default {
   name: 'Login',
+  components: { ErrorAlert, PageHeader },
   data() {
     return {
       form: { email: '', password: '' },
@@ -41,9 +44,18 @@ export default {
       var self = this
       self.err = ''
 
-      // T7 — Form Validation
+      // Form Validation
       if (!self.form.email || !self.form.password) {
         self.err = 'Email and password are required.'
+        return
+      }
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(self.form.email)) {
+        self.err = 'Please enter a valid email address.'
+        return
+      }
+      if (self.form.password.length < 8) {
+        self.err = 'Password must be at least 8 characters.'
         return
       }
 
@@ -58,6 +70,8 @@ export default {
             localStorage.setItem('user', JSON.stringify(user))
             // Save to Vuex store (used by Navbar to show/hide links)
             self.$store.commit('setUser', user)
+            // Sync cart so Navbar count reflects this user's saved items
+            self.$store.dispatch('fetchCart')
             self.$router.push('/')
           }
         })
@@ -69,6 +83,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>

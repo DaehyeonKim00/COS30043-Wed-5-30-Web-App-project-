@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Hero Section -->
-    <section class="about-hero rounded-3 text-white text-center py-5 mb-5 px-3">
+    <section class="hero-latte rounded-3 text-center py-5 mb-5 px-3">
       <h1 class="display-5 fw-bold mb-3">About SwinMusic Shop</h1>
       <p class="lead mb-0">
         SwinMusic Shop is an online music store for instruments, accessories, and music lovers.
@@ -25,9 +25,9 @@
         </div>
 
         <div class="col-12 col-md-5">
-          <div class="bg-dark rounded-3 text-white text-center py-5">
+          <div class="brand-card rounded-3 text-center py-5">
             <p class="display-6 fw-bold mb-1">SwinMusic</p>
-            <p class="text-light mb-0">Your sound starts here</p>
+            <p class="mb-0 brand-sub">Your sound starts here</p>
           </div>
         </div>
       </div>
@@ -107,8 +107,3 @@ export default {
 }
 </script>
 
-<style scoped>
-.about-hero {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-}
-</style>

@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import { getCart } from '../api/cart.js'
 
 export const store = createStore({
   // shared data
@@ -33,21 +34,21 @@ export const store = createStore({
     removeFromCart(state, productId) {
       state.cart = state.cart.filter(item => item.id !== productId)
     }
+  },
 
-    // ===== Below are example mutations for Phase 3+ (not used yet) =====
-    // addToCart(state, product) {
-    //   state.cart.push(product)
-    // },
-    // removeFromCart(state, productId) {
-    //   state.cart = state.cart.filter(item => item.id !== productId)
-    // },
-    // addToWishlist(state, product) {
-    //   state.wishlist.push(product)
-    // },
-    // removeFromWishlist(state, productId) {
-    //   state.wishlist = state.wishlist.filter(item => item.id !== productId)
-    // }
+  actions: {
+    // Pull the server-side cart into Vuex so Navbar count stays in sync.
+    // Call this after login, after add/update/remove, and on app startup
+    // (when restoring a logged-in user from localStorage).
+    fetchCart({ commit, state }) {
+      if (!state.user) return Promise.resolve()
+      return getCart(state.user.id)
+        .then(data => {
+          commit('setCart', Array.isArray(data) ? data : [])
+        })
+        .catch(err => {
+          console.error('fetchCart failed:', err)
+        })
+    }
   }
-
-  // getters / actions stay disabled until Phase 3+ (see git history)
 })

@@ -2,24 +2,16 @@
   <div>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="text-center py-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+    <LoadingSpinner v-if="isLoading" />
 
     <!-- Error state -->
-    <div v-else-if="err" class="alert alert-danger">
-      {{ err }}
-    </div>
+    <ErrorAlert v-else-if="err" :message="err" />
 
     <!-- Product detail -->
     <div v-else-if="product">
 
       <!-- Back button -->
-      <router-link to="/products" class="btn btn-outline-secondary mb-4">
-        &larr; Back to Products
-      </router-link>
+      <BackButton to="/products" label="Back to Products" />
 
       <div class="row g-5">
 
@@ -65,6 +57,14 @@
               Add to Cart
             </button>
 
+            <!-- View Reviews link -->
+            <router-link
+              :to="{ path: '/review', query: { product_id: product.id } }"
+              class="btn btn-outline-dark"
+            >
+              View Reviews
+            </router-link>
+
           </div>
 
           <!-- Not logged in -->
@@ -72,6 +72,12 @@
             <p class="text-muted">
               <router-link to="/login">Log in</router-link> to add to wishlist or cart.
             </p>
+            <router-link
+              :to="{ path: '/review', query: { product_id: product.id } }"
+              class="btn btn-outline-dark"
+            >
+              View Reviews
+            </router-link>
           </div>
 
           <!-- Feedback message -->
@@ -91,25 +97,7 @@
           :key="item.id"
           class="col-12 col-sm-6 col-md-3"
         >
-          <div class="card h-100 shadow-sm">
-            <img
-              :src="item.image"
-              :alt="item.name"
-              class="card-img-top"
-              style="height: 180px; object-fit: cover;"
-            />
-            <div class="card-body d-flex flex-column">
-              <p class="text-muted small mb-1">{{ item.category }}</p>
-              <h6 class="card-title fw-bold">{{ item.name }}</h6>
-              <p class="mt-auto fw-bold">${{ item.price }}</p>
-              <router-link
-                :to="'/products/' + item.id"
-                class="btn btn-dark btn-sm mt-2"
-              >
-                View Details
-              </router-link>
-            </div>
-          </div>
+          <ProductCard :product="item" />
         </div>
       </div>
     </div>
@@ -121,61 +109,91 @@
 import { getCart, addToCart } from '../api/cart.js'
 import { getWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist.js'
 import { getProductById, getRecommendedProducts } from '../api/productDetail.js' // For advanced feature (tuan)
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ErrorAlert from '../components/ErrorAlert.vue'
+import BackButton from '../components/BackButton.vue'
+import ProductCard from '../components/ProductCard.vue'
 
 export default {
   name: 'ProductDetail',
+  components: { LoadingSpinner, ErrorAlert, BackButton, ProductCard },
   data() {
     return {
       product: null,
       isLoading: false,
       err: '',
       msg: '',
-      user: null,
       inWishlist: false,
       recommendedProducts: [] // For advanced feature (tuan)
     }
   },
+  computed: {
+    // Reactive: reflects Vuex user (clears immediately on logout)
+    user() {
+      return this.$store.state.user
+    }
+  },
   mounted() {
-    var self = this
-    var productId = self.$route.params.id
-    self.user = JSON.parse(localStorage.getItem('user'))
-    
-    self.isLoading = true
-    getProductById(productId)
-    .then(data => {
-      self.product = data
-      self.isLoading = false
-      
-      // Check wishlist status if user is logged in
-      if (self.user) {
-        getWishlist(self.user.id)
-        .then(items => {
-          self.inWishlist = items.some(item => item.product_id == productId)
-        })
+    this.loadProduct(this.$route.params.id)
+  },
+  watch: {
+    // Re-fetch when navigating between products (e.g. via "You May Also Like")
+    '$route.params.id'(newId) {
+      if (newId) {
+        // Scroll to top so the user clearly sees the new product
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        this.loadProduct(newId)
       }
-      
-      // Fetch recommended products based on the same category (advanced feature - tuan)
-      getRecommendedProducts(data.category, productId)
-      .then(products => {
-        self.recommendedProducts = products
-      })
-    })
-    .catch(error => {
-      self.err = 'Failed to load product. Please try again later.'
-      self.isLoading = false
-    })
+    }
   },
   methods: {
+    loadProduct(productId) {
+      var self = this
+      self.err = ''
+      self.msg = ''
+      self.product = null
+      self.recommendedProducts = []
+      self.inWishlist = false
+      self.isLoading = true
+
+      getProductById(productId)
+        .then(data => {
+          self.product = data
+          self.isLoading = false
+
+          // Check wishlist status if user is logged in
+          if (self.user) {
+            getWishlist(self.user.id)
+              .then(items => {
+                self.inWishlist = items.some(item => item.product_id == productId)
+              })
+          }
+
+          // Fetch recommended products based on the same category
+          getRecommendedProducts(data.category, productId)
+            .then(products => {
+              self.recommendedProducts = products
+            })
+        })
+        .catch(error => {
+          self.err = 'Failed to load product. Please try again later.'
+          self.isLoading = false
+        })
+    },
     toggleWishlist() {
       var self = this
       if (!self.user) return
+      self.err = ''
+      self.msg = ''
 
       if (self.inWishlist) {
         removeFromWishlist(self.user.id, self.product.id)
           .then(data => {
-            if (data.success) {
+            if (data && data.success) {
               self.inWishlist = false
               self.msg = 'Removed from wishlist.'
+            } else {
+              self.err = (data && data.error) || 'Failed to update wishlist.'
             }
           })
           .catch(error => {
@@ -184,9 +202,15 @@ export default {
       } else {
         addToWishlist(self.user.id, self.product.id)
           .then(data => {
-            if (data.success) {
+            if (data && data.success) {
               self.inWishlist = true
               self.msg = 'Added to wishlist!'
+            } else if (data && data.message === 'Already in wishlist') {
+              // Backend says it's already saved — sync the UI state instead of erroring.
+              self.inWishlist = true
+              self.msg = 'Already in wishlist.'
+            } else {
+              self.err = 'Failed to update wishlist.'
             }
           })
           .catch(error => {
@@ -204,6 +228,8 @@ export default {
       .then(data => {
         if (data.success) {
           self.msg = 'Added to cart!'
+          // Refresh Vuex cart so the Navbar count updates immediately
+          self.$store.dispatch('fetchCart')
         }
       })
       .catch(error => {
@@ -214,9 +240,3 @@ export default {
 }
 </script>
 
-<style scoped>
-.product-image {
-  max-height: 450px;
-  object-fit: cover;
-}
-</style>

@@ -2,10 +2,10 @@
   <div>
 
     <!-- Hero Section -->
-    <section class="hero rounded-3 bg-dark text-white text-center py-5 mb-5 px-3">
+    <section class="hero-latte rounded-3 text-center py-5 mb-5 px-3">
       <h1 class="display-5 fw-bold mb-3">Welcome to SwinMusic Shop</h1>
       <p class="lead mb-4">Find the best instruments and accessories for every musician</p>
-      <router-link to="/products" class="btn btn-light btn-lg">Shop Now</router-link>
+      <router-link to="/products" class="btn btn-primary btn-lg">Shop Now</router-link>
     </section>
 
     <!-- Featured Products Section -->
@@ -30,16 +30,10 @@
       </div>
 
       <!-- Loading state -->
-      <div v-if="isLoading" class="text-center py-5">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <LoadingSpinner v-if="isLoading" />
 
       <!-- Error state -->
-      <div v-else-if="err" class="alert alert-danger">
-        {{ err }}
-      </div>
+      <ErrorAlert v-else-if="err" :message="err" />
 
       <!-- Products grid + pagination -->
       <div v-else>
@@ -82,12 +76,16 @@
 import { getFeaturedProducts } from '../api/home.js'
 import ProductCard from '../components/ProductCard.vue'
 import PaginationBar, { calcPageCount, getPaginatedItems } from '../components/PaginationBar.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ErrorAlert from '../components/ErrorAlert.vue'
 
 export default {
   name: 'Home',
   components: {
     ProductCard,
-    PaginationBar
+    PaginationBar,
+    LoadingSpinner,
+    ErrorAlert
   },
   data() {
     return {
@@ -133,9 +131,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.hero {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-}
-</style>

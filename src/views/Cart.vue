@@ -1,15 +1,17 @@
 <template>
   <div class="container mt-4">
-    <h2 class="mb-4">Your Cart</h2>
+    <PageHeader title="Your Cart" />
  
-    <div v-if="err" class="alert alert-danger">{{ err }}</div>
+    <ErrorAlert :message="err" />
     <div v-if="isLoading" class="text-center py-5">Loading cart...</div>
  
     <!-- Empty cart -->
-    <div v-else-if="items.length === 0" class="text-center text-muted py-5">
-      <p class="fs-5">Your cart is empty.</p>
-      <router-link to="/products" class="btn btn-primary mt-3">Browse Products</router-link>
-    </div>
+    <EmptyState
+      v-else-if="items.length === 0"
+      message="Your cart is empty."
+      link-to="/products"
+      link-label="Browse Products"
+    />
  
     <!-- Cart items -->
     <div v-else>
@@ -19,7 +21,7 @@
           <img
             :src="item.image"
             :alt="item.name"
-            style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;"
+            class="cart-thumb"
           />
  
           <div class="flex-grow-1">
@@ -55,9 +57,13 @@
  
 <script>
 import { getCart, addToCart, removeFromCart, updateCartQuantity } from '../api/cart.js'
- 
+import ErrorAlert from '../components/ErrorAlert.vue'
+import PageHeader from '../components/PageHeader.vue'
+import EmptyState from '../components/EmptyState.vue'
+
 export default {
   name: 'Cart',
+  components: { ErrorAlert, PageHeader, EmptyState },
   data() {
     return {
       items: [],
@@ -85,6 +91,8 @@ export default {
       .then(function(data) {
         self.items = data
         self.isLoading = false
+        // Keep Vuex in sync (Navbar count etc.)
+        self.$store.commit('setCart', data)
       })
       .catch(function() {
         self.err = 'Failed to load cart.'
@@ -97,6 +105,7 @@ export default {
       removeFromCart(cartId)
         .then(function() {
           self.items = self.items.filter(function(i) { return i.id !== cartId })
+          self.$store.dispatch('fetchCart')
         })
         .catch(function() { self.err = 'Failed to remove item.' })
     },
@@ -112,6 +121,7 @@ export default {
           if (data.success) {
             item.quantity = newQty
             self.err = ''
+            self.$store.dispatch('fetchCart')
           }
         })
         .catch(function() { self.err = 'Failed to update quantity.' })
@@ -127,6 +137,7 @@ export default {
         .then(function(data) {
           if (data.success) {
             item.quantity = newQty
+            self.$store.dispatch('fetchCart')
           }
         })
         .catch(function() { self.err = 'Failed to update quantity.' })
@@ -135,5 +146,3 @@ export default {
 }
 </script>
  
-<style scoped>
-</style>

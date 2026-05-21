@@ -50,3 +50,22 @@ export function removeFromWishlist(userId, productId) {
       throw error
     })
 }
+
+export function removeWishlistById(wishlistId) {
+  return fetch(wishlistApiUrl, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: wishlistId
+    })
+  })
+    .then(response => {
+      return response.json()
+    })
+    .catch(error => {
+      console.error('Error removing wishlist item:', error)
+      throw error
+    })
+}
