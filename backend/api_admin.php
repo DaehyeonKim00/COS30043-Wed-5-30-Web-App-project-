@@ -1,13 +1,17 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Content-Type: application/json');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
 
 require 'db.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
-mysqli_set_charset($conn, 'utf8');
 
 $table = 'products';
 
@@ -28,26 +32,34 @@ if (isset($input)) {
 switch ($method) {
   case 'GET':
     $result = mysqli_query($conn, "SELECT * FROM `$table` ORDER BY created_at DESC");
-    header('Content-Type: application/json');
-    echo '[';
-    for ($i = 0; $i < mysqli_num_rows($result); $i++) {
-      echo ($i > 0 ? ',' : '') . json_encode(mysqli_fetch_object($result));
-    }
-    echo ']';
+    $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    echo json_encode($products);
     break;
   case 'POST':
-    mysqli_query($conn, "INSERT INTO `$table` SET $set");
-    echo mysqli_insert_id($conn);
+    $result = mysqli_query($conn, "INSERT INTO `$table` SET $set");
+    if ($result) {
+      echo json_encode(['success' => true, 'id' => mysqli_insert_id($conn)]);
+    } else {
+      echo json_encode(['error' => mysqli_error($conn)]);
+    }
     break;
   case 'PUT':
     $id = mysqli_real_escape_string($conn, $input['id']);
-    mysqli_query($conn, "UPDATE `$table` SET $set WHERE `id`='$id'");
-    echo mysqli_affected_rows($conn);
+    $result = mysqli_query($conn, "UPDATE `$table` SET $set WHERE `id`='$id'");
+    if ($result) {
+      echo json_encode(['success' => true]);
+    } else {
+      echo json_encode(['error' => mysqli_error($conn)]);
+    }
     break;
   case 'DELETE':
     $id = mysqli_real_escape_string($conn, $input['id']);
-    mysqli_query($conn, "DELETE FROM `$table` WHERE `id`='$id'");
-    echo mysqli_affected_rows($conn);
+    $result = mysqli_query($conn, "DELETE FROM `$table` WHERE `id`='$id'");
+    if ($result) {
+      echo json_encode(['success' => true]);
+    } else {
+      echo json_encode(['error' => mysqli_error($conn)]);
+    }
     break;
 }
 

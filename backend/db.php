@@ -6,11 +6,10 @@ $password = '040900';
 
 $conn = mysqli_connect($host, $username, $password, $dbname);
 
-
-
 if (!$conn) {
-    echo json_encode(["error" => "Connection failed: " . mysqli_connect_error()]);
+    echo json_encode(['error' => 'Connection failed: ' . mysqli_connect_error()]);
     exit();
 }
 
+mysqli_set_charset($conn, 'utf8');
 ?>
