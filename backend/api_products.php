@@ -20,19 +20,42 @@ switch ($method) {
       $result = mysqli_query($conn, "SELECT * FROM products WHERE id=$id");
       $product = mysqli_fetch_assoc($result);
       echo json_encode($product);
-    } elseif (isset($_GET['recommend'])) {
-      // Search for recommended products based on category and exclude current product (Advanced teammember tuan)
-      $category = mysqli_real_escape_string($conn, $_GET['category']);
-      $exclude = (int)$_GET['exclude'];
-      $result = mysqli_query($conn,
-        "SELECT * FROM products
-         WHERE category = '$category'
-         AND id != $exclude
-         ORDER BY RAND()
+    } elseif (isset($_GET['recommend'])) { // e.g. ?recommend=1&exclude=5&category=Electronics (advanced feature: member tuan)
+    $current_id = (int)$_GET['exclude'];
+    $category = mysqli_real_escape_string($conn, $_GET['category']);
+
+    // Step 1: Get products from same orders
+    $result = mysqli_query($conn,
+        "SELECT DISTINCT p.* 
+         FROM products p
+         JOIN order_items oi ON p.id = oi.product_id
+         WHERE oi.order_id IN (
+             SELECT order_id FROM order_items WHERE product_id = $current_id
+         )
+         AND p.id != $current_id
          LIMIT 4"
-      );
-      $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
-      echo json_encode($products);
+    );
+    $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+    // Step 2: If less than 4, fill with random from same category
+    if (count($products) < 4) {
+        $existingIds = array_map(fn($p) => $p['id'], $products);
+        $existingIds[] = $current_id;
+        $excludeIds = implode(',', $existingIds);
+
+        $needed = 4 - count($products);
+        $fallback = mysqli_query($conn,
+            "SELECT * FROM products 
+             WHERE category = '$category' 
+             AND id NOT IN ($excludeIds)
+             ORDER BY RAND()
+             LIMIT $needed"
+        );
+        $fallbackProducts = mysqli_fetch_all($fallback, MYSQLI_ASSOC);
+        $products = array_merge($products, $fallbackProducts);
+    }
+    echo json_encode($products);
+
     } elseif (isset($_GET['category'])) {
       $category = $_GET['category'];
       $result = mysqli_query($conn, "SELECT * FROM products WHERE category='$category'");
