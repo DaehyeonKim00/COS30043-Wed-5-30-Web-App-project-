@@ -52,24 +52,37 @@
         </div>
       </div>
     </div>
+    <!-- Auth Modal — shown when unauthenticated user tries to view cart (advanced feature - tuan) -->
+    <AuthPromptModal
+      :show="showAuthModal"
+      :message="authModalMessage"
+      @cancel="showAuthModal = false"
+    />  
   </div>
 </template>
  
 <script>
 import { getCart, addToCart, removeFromCart, updateCartQuantity } from '../api/cart.js'
+import { useAuth } from '../composables/useAuth.js'
+import AuthPromptModal from '../components/AuthPromptModal.vue'
 import ErrorAlert from '../components/ErrorAlert.vue'
 import PageHeader from '../components/PageHeader.vue'
 import EmptyState from '../components/EmptyState.vue'
 
 export default {
   name: 'Cart',
-  components: { ErrorAlert, PageHeader, EmptyState },
+  components: { ErrorAlert, PageHeader, EmptyState, AuthPromptModal },
+
+  setup() {
+    const { showAuthModal, authModalMessage, closeAuthModal } = useAuth()
+    return { showAuthModal, authModalMessage, closeAuthModal }
+  },
+
   data() {
     return {
       items: [],
       isLoading: false,
       err: '',
-      user: null
     }
   },
   computed: {
@@ -79,13 +92,20 @@ export default {
   },
   mounted() {
     var self = this
-    self.user = JSON.parse(localStorage.getItem('user'))
-    if (!self.user) {
-      self.$router.push('/login')
+    // Check authentication (advanced feature - tuan)
+    //self.user = JSON.parse(localStorage.getItem('user'))
+    //if (!self.user) {
+    //  self.$router.push('/login')
+    //  return
+    //}
+    // 
+    if (!self.$store.state.user) {
+      self.showAuthModal = true
       return
     }
+
     self.isLoading = true
-    getCart(self.user.id)
+    getCart(self.$store.state.user.id)
       .then( data => {
         self.items = data
         self.isLoading = false

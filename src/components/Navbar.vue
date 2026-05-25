@@ -63,6 +63,9 @@
                   <!-- When not logged in -->
                   <template v-if="!$store.state.isLoggedIn">
                     <li class="nav-item">
+                      <router-link class="nav-link" to="/cart">Cart</router-link>
+                    </li>
+                    <li class="nav-item">
                       <router-link class="nav-link" to="/register">Register</router-link>
                     </li>
                     <li class="nav-item">

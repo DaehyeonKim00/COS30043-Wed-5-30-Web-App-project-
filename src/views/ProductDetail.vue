@@ -40,8 +40,9 @@
             <span v-else class="badge bg-danger">Out of Stock</span>
           </p>
 
-          <!-- Action buttons (logged in only) -->
-          <div v-if="user" class="d-flex flex-wrap gap-2">
+          <!-- Action buttons — always visible --> 
+          <!-- For advanced feature --> 
+          <div class="d-flex flex-wrap gap-2">
 
             <!-- Wishlist toggle button -->
             <button
@@ -67,19 +68,6 @@
 
           </div>
 
-          <!-- Not logged in -->
-          <div v-else>
-            <p class="text-muted">
-              <router-link to="/login">Log in</router-link> to add to wishlist or cart.
-            </p>
-            <router-link
-              :to="{ path: '/review', query: { product_id: product.id } }"
-              class="btn btn-outline-dark"
-            >
-              View Reviews
-            </router-link>
-          </div>
-
           <!-- Feedback message -->
           <div v-if="msg" class="alert alert-success mt-3 py-2">{{ msg }}</div>
 
@@ -102,13 +90,23 @@
       </div>
     </div>
 
+    <!-- Auth Modal — shown when unauthenticated user tries to add to cart/wishlist -->
+    <AuthPromptModal
+      :show="showAuthModal"
+      :message="authModalMessage"
+      @cancel="closeAuthModal"
+    />
   </div>
+
 </template>
 
 <script>
+import AuthPromptModal from '../components/AuthPromptModal.vue'
 import { getCart, addToCart } from '../api/cart.js'
 import { getWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist.js'
-import { getProductById, getRecommendedProducts } from '../api/productDetail.js' // For advanced feature (tuan)
+import { getProductById, getRecommendedProducts } from '../api/productDetail.js' 
+import { useAuth } from '../composables/useAuth.js'
+import { useCart } from '../composables/useCart.js'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
 import ErrorAlert from '../components/ErrorAlert.vue'
 import BackButton from '../components/BackButton.vue'
@@ -116,7 +114,14 @@ import ProductCard from '../components/ProductCard.vue'
 
 export default {
   name: 'ProductDetail',
-  components: { LoadingSpinner, ErrorAlert, BackButton, ProductCard },
+  components: { LoadingSpinner, ErrorAlert, BackButton, ProductCard, AuthPromptModal },
+  
+  setup() { // Using composables for auth and cart state management (advanced feature - tuan added)
+    const { user, requireAuth, showAuthModal, authModalMessage, closeAuthModal } = useAuth()
+    const { addItem } = useCart()
+    return { user, requireAuth, showAuthModal, authModalMessage, closeAuthModal, addItem }
+  },
+
   data() {
     return {
       product: null,
@@ -124,12 +129,12 @@ export default {
       err: '',
       msg: '',
       inWishlist: false,
-      recommendedProducts: [] // For advanced feature (tuan)
+      recommendedProducts: [] 
     }
   },
   computed: {
     // Reactive: reflects Vuex user (clears immediately on logout)
-    user() {
+    userFromStore() {
       return this.$store.state.user
     }
   },
@@ -162,8 +167,8 @@ export default {
           self.isLoading = false
 
           // Check wishlist status if user is logged in
-          if (self.user) {
-            getWishlist(self.user.id)
+          if (self.userFromStore) {
+            getWishlist(self.userFromStore.id)
               .then(items => {
                 self.inWishlist = items.some(item => item.product_id == productId)
               })
@@ -182,12 +187,13 @@ export default {
     },
     toggleWishlist() {
       var self = this
-      if (!self.user) return
+      // useAuth composable
+      if (!self.requireAuth('Please log in to add to wishlist!')) return
       self.err = ''
       self.msg = ''
 
       if (self.inWishlist) {
-        removeFromWishlist(self.user.id, self.product.id)
+        removeFromWishlist(elf.userFromStore.id, self.product.id)
           .then(data => {
             if (data && data.success) {
               self.inWishlist = false
@@ -200,7 +206,7 @@ export default {
             self.err = 'Failed to update wishlist.'
           })
       } else {
-        addToWishlist(self.user.id, self.product.id)
+        addToWishlist(self.userFromStore.id, self.product.id)
           .then(data => {
             if (data && data.success) {
               self.inWishlist = true
@@ -218,24 +224,20 @@ export default {
           })
       }
     },
-    addToCartHandler() {
-    var self = this
-    if (!self.user) {
-      self.$router.push('/login')
-      return
+    addToCartHandler() { // Using useCart composable for cart management (advanced feature - tuan added)
+      var self = this
+      // useAuth composable — requireAuth redirects if not logged in
+      if (!self.requireAuth('Please log in to add to cart!')) return
+
+      // useCart composable — addItem handles API + Vuex sync automatically
+      self.addItem(self.userFromStore.id, self.product.id, 1)
+        .then(data => {
+          if (data.success) {
+            self.msg = 'Added to cart!'
+          }
+        })
+        .catch(() => { self.err = 'Failed to add to cart.' })
     }
-    addToCart(self.user.id, self.product.id, 1)
-      .then(data => {
-        if (data.success) {
-          self.msg = 'Added to cart!'
-          // Refresh Vuex cart so the Navbar count updates immediately
-          self.$store.dispatch('fetchCart')
-        }
-      })
-      .catch(error => {
-        self.err = 'Failed to add to cart.'
-      })
-  }
   }
 }
 </script>
