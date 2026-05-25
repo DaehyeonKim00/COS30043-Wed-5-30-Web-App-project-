@@ -6,16 +6,38 @@
 
     <div class="mb-3">
       <label class="form-label">Email</label>
-      <input v-model="form.email" type="email" class="form-control" placeholder="you@email.com" />
+      <input
+        v-model="form.email"
+        type="email"
+        class="form-control"
+        placeholder="you@email.com"
+      />
     </div>
 
     <div class="mb-3">
       <label class="form-label">Password</label>
-      <input v-model="form.password" type="password" class="form-control" placeholder="Min. 8 characters" />
+      <input
+        v-model="form.password"
+        type="password"
+        class="form-control"
+        placeholder="Min. 8 characters"
+      />
+    </div>
+
+    <div class="form-check mb-3">
+      <input
+        id="rememberMe"
+        v-model="rememberMe"
+        class="form-check-input"
+        type="checkbox"
+      />
+      <label class="form-check-label" for="rememberMe">
+        Keep me logged in
+      </label>
     </div>
 
     <button class="btn btn-primary w-100" @click="submit" :disabled="isLoading">
-      {{ isLoading ? 'Logging in...' : 'Login' }}
+      {{ isLoading ? "Logging in..." : "Login" }}
     </button>
 
     <p class="mt-3 text-center">
@@ -25,61 +47,66 @@
 </template>
 
 <script>
-import { loginUser } from '../api/login.js'
-import ErrorAlert from '../components/ErrorAlert.vue'
-import PageHeader from '../components/PageHeader.vue'
+import { loginUser } from "../api/login.js";
+import ErrorAlert from "../components/ErrorAlert.vue";
+import PageHeader from "../components/PageHeader.vue";
+import { saveAuthSession } from "../utils/authSession.js";
 
 export default {
-  name: 'Login',
+  name: "Login",
   components: { ErrorAlert, PageHeader },
   data() {
     return {
-      form: { email: '', password: '' },
+      form: { email: "", password: "" },
+      rememberMe: false,
       isLoading: false,
-      err: ''
-    }
+      err: "",
+    };
   },
   methods: {
     submit() {
-      var self = this
-      self.err = ''
+      var self = this;
+      self.err = "";
 
       // Form Validation
       if (!self.form.email || !self.form.password) {
-        self.err = 'Email and password are required.'
-        return
+        self.err = "Email and password are required.";
+        return;
       }
-      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(self.form.email)) {
-        self.err = 'Please enter a valid email address.'
-        return
+        self.err = "Please enter a valid email address.";
+        return;
       }
       if (self.form.password.length < 8) {
-        self.err = 'Password must be at least 8 characters.'
-        return
+        self.err = "Password must be at least 8 characters.";
+        return;
       }
 
-      self.isLoading = true
+      self.isLoading = true;
       loginUser(self.form.email, self.form.password)
-        .then( user => {
-          self.isLoading = false
+        .then((user) => {
+          self.isLoading = false;
           if (!user || user.error) {
-            self.err = 'Invalid email or password.'
+            self.err = "Invalid email or password.";
           } else {
-            // Save to localStorage (used by router auth guard)
-            localStorage.setItem('user', JSON.stringify(user))
-            // Save to Vuex store (used by Navbar to show/hide links)
-            self.$store.commit('setUser', user)
+            const expiresAt = Date.now() + 30 * 60 * 1000;
+            // Save the auth session using the selected persistence mode.
+            saveAuthSession(user, self.rememberMe, expiresAt);
+            // Save to Vuex store (used by Navbar, badge, and route guards)
+            self.$store.commit("setUser", user);
+            self.$store.commit("setRememberMe", self.rememberMe);
+            self.$store.commit("setExpiresAt", expiresAt);
             // Sync cart so Navbar count reflects this user's saved items
-            self.$store.dispatch('fetchCart')
-            self.$router.push('/')
+            self.$store.dispatch("fetchCart");
+            self.$router.push("/");
           }
         })
-        .catch(error => {
-          self.isLoading = false
-          self.err = 'Login failed. Please try again.'
-        })
-    }
-  }
-}
+        .catch((error) => {
+          self.isLoading = false;
+          self.err = "Login failed. Please try again.";
+        });
+    },
+  },
+};
 </script>

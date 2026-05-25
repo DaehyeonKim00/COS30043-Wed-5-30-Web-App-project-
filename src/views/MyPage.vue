@@ -10,7 +10,6 @@
 
     <!-- Profile + Wishlist -->
     <div v-else class="row g-4">
-
       <!-- Profile -->
       <div class="col-md-6">
         <div class="card shadow-sm">
@@ -66,7 +65,10 @@
                   :key="item.id"
                   class="list-group-item d-flex justify-content-between align-items-center gap-2"
                 >
-                  <router-link :to="'/products/' + item.product_id" class="flex-grow-1">
+                  <router-link
+                    :to="'/products/' + item.product_id"
+                    class="flex-grow-1"
+                  >
                     {{ item.name }}
                   </router-link>
                   <span>${{ item.price }}</span>
@@ -75,7 +77,7 @@
                     :disabled="removingId === item.id"
                     @click="removeWishlistItem(item.id)"
                   >
-                    {{ removingId === item.id ? '...' : 'Remove' }}
+                    {{ removingId === item.id ? "..." : "Remove" }}
                   </button>
                 </li>
               </ul>
@@ -94,109 +96,113 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
 
 <script>
-import { getUserInfo, updateUserInfo } from '../api/myPage.js'
-import { getWishlist, removeWishlistById } from '../api/wishlist.js'
-import LoadingSpinner from '../components/LoadingSpinner.vue'
-import ErrorAlert from '../components/ErrorAlert.vue'
-import SuccessMessage from '../components/SuccessMessage.vue'
-import PageHeader from '../components/PageHeader.vue'
-import EmptyState from '../components/EmptyState.vue'
+import { getUserInfo, updateUserInfo } from "../api/myPage.js";
+import { getWishlist, removeWishlistById } from "../api/wishlist.js";
+import LoadingSpinner from "../components/LoadingSpinner.vue";
+import ErrorAlert from "../components/ErrorAlert.vue";
+import SuccessMessage from "../components/SuccessMessage.vue";
+import PageHeader from "../components/PageHeader.vue";
+import EmptyState from "../components/EmptyState.vue";
 
 export default {
-  name: 'MyPage',
-  components: { LoadingSpinner, ErrorAlert, SuccessMessage, PageHeader, EmptyState },
+  name: "MyPage",
+  components: {
+    LoadingSpinner,
+    ErrorAlert,
+    SuccessMessage,
+    PageHeader,
+    EmptyState,
+  },
   data() {
     return {
       user: {
-        name: '',
-        email: ''
+        name: "",
+        email: "",
       },
       isLoading: false,
-      err: '',
-      msg: '',
+      err: "",
+      msg: "",
 
       wishlist: [],
       wishlistLoading: false,
-      wishlistErr: '',
+      wishlistErr: "",
       removingId: null,
 
       // ===== TEMPORARY (login not implemented yet) =====
       // Using a fixed user id so the page can be tested against the DB.
       //userId: 1
       // ===== REAL CODE (use after login is implemented) =====
-      // Read the logged-in user saved at login time:
-      userId: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).id : null      
+      // The router guard owns access control. Read the current user from the store.
+      userId: null,
       // (or from Vuex: this.$store.state.user.id)
-    }
+    };
   },
   mounted() {
-    var self = this
+    var self = this;
 
-    if (!self.userId) {
-    self.$router.push('/login')
-    return
-    }
+    // Determine the user id from the store; if absent, skip loading (guard should redirect).
+    self.userId = this.$store.state.user ? this.$store.state.user.id : null;
+    if (!self.userId) return;
 
     // Load profile
-    self.isLoading = true
+    self.isLoading = true;
     getUserInfo(self.userId)
-      .then(data => {
-        self.user = data
-        self.isLoading = false
+      .then((data) => {
+        self.user = data;
+        self.isLoading = false;
       })
-      .catch(error => {
-        self.err = 'Failed to load profile. Please try again later.'
-        self.isLoading = false
-      })
+      .catch((error) => {
+        self.err = "Failed to load profile. Please try again later.";
+        self.isLoading = false;
+      });
 
     // Load wishlist
-    self.wishlistLoading = true
+    self.wishlistLoading = true;
     getWishlist(self.userId)
-      .then(data => {
-        self.wishlist = data
-        self.wishlistLoading = false
+      .then((data) => {
+        self.wishlist = data;
+        self.wishlistLoading = false;
       })
-      .catch(error => {
-        self.wishlistErr = 'Failed to load wishlist.'
-        self.wishlistLoading = false
-      })
+      .catch((error) => {
+        self.wishlistErr = "Failed to load wishlist.";
+        self.wishlistLoading = false;
+      });
   },
   methods: {
     saveProfile() {
-      var self = this
+      var self = this;
       updateUserInfo(self.userId, self.user.name, self.user.email)
-        .then(data => {
-          self.msg = 'Profile updated successfully.'
+        .then((data) => {
+          self.msg = "Profile updated successfully.";
         })
-        .catch(error => {
-          self.err = 'Failed to update profile.'
-        })
+        .catch((error) => {
+          self.err = "Failed to update profile.";
+        });
     },
     removeWishlistItem(wishlistId) {
-      var self = this
-      self.removingId = wishlistId
-      self.wishlistErr = ''
+      var self = this;
+      self.removingId = wishlistId;
+      self.wishlistErr = "";
 
       removeWishlistById(wishlistId)
-        .then(data => {
+        .then((data) => {
           if (data && data.success) {
-            self.wishlist = self.wishlist.filter( w => w.id !== wishlistId )
+            self.wishlist = self.wishlist.filter((w) => w.id !== wishlistId);
           } else {
-            self.wishlistErr = (data && data.error) || 'Failed to remove item.'
+            self.wishlistErr = (data && data.error) || "Failed to remove item.";
           }
-          self.removingId = null
+          self.removingId = null;
         })
-        .catch(error => {
-          self.wishlistErr = 'Failed to remove item.'
-          self.removingId = null
-        })
-    }
-  }
-}
+        .catch((error) => {
+          self.wishlistErr = "Failed to remove item.";
+          self.removingId = null;
+        });
+    },
+  },
+};
 </script>

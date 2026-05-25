@@ -2,10 +2,11 @@
   <nav class="navbar navbar-expand-xl navbar-dark wood-navbar sticky-top">
     <div class="container">
       <div class="row w-100 align-items-center">
-
         <!-- Logo -->
         <div class="col-8 col-xl-2">
-          <router-link class="navbar-brand mb-0" to="/">SwinMusic Shop</router-link>
+          <router-link class="navbar-brand mb-0" to="/"
+            >SwinMusic Shop</router-link
+          >
         </div>
 
         <!-- Hamburger button (mobile only: < 768px) -->
@@ -17,7 +18,8 @@
             data-bs-target="#navbarMenu"
             aria-controls="navbarMenu"
             aria-expanded="false"
-            aria-label="Toggle navigation">
+            aria-label="Toggle navigation"
+          >
             <span class="navbar-toggler-icon"></span>
           </button>
         </div>
@@ -26,7 +28,6 @@
         <div class="col-12 col-xl-10">
           <div class="collapse navbar-collapse" id="navbarMenu">
             <div class="row w-100 pt-3 pt-xl-0 align-items-center">
-
               <!-- Left links -->
               <div class="col-12 col-xl-5">
                 <ul class="navbar-nav">
@@ -34,20 +35,30 @@
                     <router-link class="nav-link" to="/">Home</router-link>
                   </li>
                   <li class="nav-item">
-                    <router-link class="nav-link" to="/products">Products</router-link>
+                    <router-link class="nav-link" to="/products"
+                      >Products</router-link
+                    >
                   </li>
                   <li class="nav-item">
-                    <router-link class="nav-link" to="/about">About</router-link>
+                    <router-link class="nav-link" to="/about"
+                      >About</router-link
+                    >
                   </li>
                   <li class="nav-item">
-                    <router-link class="nav-link" to="/review">Reviews</router-link>
+                    <router-link class="nav-link" to="/review"
+                      >Reviews</router-link
+                    >
                   </li>
                   <!-- Admin link: only visible to users with the admin role -->
                   <li
-                    v-if="$store.state.user && $store.state.user.role === 'admin'"
+                    v-if="
+                      $store.state.user && $store.state.user.role === 'admin'
+                    "
                     class="nav-item"
                   >
-                    <router-link class="nav-link" to="/admin">Admin</router-link>
+                    <router-link class="nav-link" to="/admin"
+                      >Admin</router-link
+                    >
                   </li>
                 </ul>
               </div>
@@ -62,7 +73,12 @@
                     placeholder="Search products..."
                     aria-label="Search"
                   />
-                  <button class="btn btn-primary btn-sm text-nowrap" type="submit">Search</button>
+                  <button
+                    class="btn btn-primary btn-sm text-nowrap"
+                    type="submit"
+                  >
+                    Search
+                  </button>
                 </form>
               </div>
 
@@ -72,10 +88,14 @@
                   <!-- When not logged in -->
                   <template v-if="!$store.state.isLoggedIn">
                     <li class="nav-item">
-                      <router-link class="nav-link" to="/register">Register</router-link>
+                      <router-link class="nav-link" to="/register"
+                        >Register</router-link
+                      >
                     </li>
                     <li class="nav-item">
-                      <router-link class="nav-link" to="/login">Login</router-link>
+                      <router-link class="nav-link" to="/login"
+                        >Login</router-link
+                      >
                     </li>
                   </template>
 
@@ -92,7 +112,9 @@
                       </router-link>
                     </li>
                     <li class="nav-item">
-                      <router-link class="nav-link" to="/mypage">My Page</router-link>
+                      <router-link class="nav-link" to="/mypage"
+                        >My Page</router-link
+                      >
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="#" @click="logout">Logout</a>
@@ -100,37 +122,37 @@
                   </template>
                 </ul>
               </div>
-
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </nav>
 </template>
 
 <script>
+import { clearAuthSession } from "../utils/authSession.js";
+
 export default {
-  name: 'Navbar',
+  name: "Navbar",
   data() {
     return {
-      searchKeyword: ''
-    }
+      searchKeyword: "",
+    };
   },
   methods: {
     submitSearch() {
-      var keyword = this.searchKeyword.trim()
+      var keyword = this.searchKeyword.trim();
       if (keyword) {
-        this.$router.push('/products?q=' + encodeURIComponent(keyword))
-        this.searchKeyword = ''
+        this.$router.push("/products?q=" + encodeURIComponent(keyword));
+        this.searchKeyword = "";
       }
     },
     logout() {
-      localStorage.removeItem('user')
-      this.$store.commit('logout')
-      this.$router.push('/login')
-    }
-  }
-}
+      clearAuthSession();
+      this.$store.commit("logout");
+      this.$router.push("/login");
+    },
+  },
+};
 </script>

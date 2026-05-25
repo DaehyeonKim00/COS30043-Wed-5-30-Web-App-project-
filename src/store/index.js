@@ -7,6 +7,8 @@ export const store = createStore({
     return {
       user: null,
       isLoggedIn: false,
+      rememberMe: false,
+      expiresAt: null,
       cart: [],
       wishlist: []
     }
@@ -18,9 +20,17 @@ export const store = createStore({
       state.user = user
       state.isLoggedIn = true
     },
+    setRememberMe(state, rememberMe) {
+      state.rememberMe = !!rememberMe
+    },
+    setExpiresAt(state, expiresAt) {
+      state.expiresAt = expiresAt ? Number(expiresAt) : null
+    },
     logout(state) {
       state.user = null
       state.isLoggedIn = false
+      state.rememberMe = false
+      state.expiresAt = null
       state.cart = []
       state.wishlist = []
     },

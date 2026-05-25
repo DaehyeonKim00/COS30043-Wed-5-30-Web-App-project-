@@ -4,6 +4,7 @@
     <main class="container py-4 flex-grow-1">
       <router-view />
     </main>
+    <AuthBadge v-if="$store.state.user && !$store.state.rememberMe" />
     <Footer />
   </div>
 </template>
