@@ -76,9 +76,9 @@
 </template>
 
 <script>
-import { removeFromCart, updateCartQuantity } from "../api/cart.js";
 import { useAuth } from "../composables/useAuth.js";
 import AuthPromptModal from "../components/AuthPromptModal.vue";
+import { getCart, removeFromCart, updateCartQuantity } from "../api/cart.js";
 import ErrorAlert from "../components/ErrorAlert.vue";
 import PageHeader from "../components/PageHeader.vue";
 import EmptyState from "../components/EmptyState.vue";
@@ -112,19 +112,17 @@ export default {
     const storeUser = this.$store.state.user;
     // Check authentication (advanced feature - tuan)
     //const savedSession = readAuthSession();
+    const savedSession = readAuthSession();
     const sessionUser = storeUser || savedSession.user;
 
     this.userId = sessionUser ? sessionUser.id : null;
 
-    //if (!this.userId) {
-    //  clearAuthSession();
-    this.$store.commit("logout");
-    this.$router.push("/login");
-    //  return
-    //}
-    //
-    if (!self.$store.state.user) {
-      self.showAuthModal = true;
+    if (!this.userId) {
+      clearAuthSession();
+      this.$store.commit("logout");
+      this.$router.push("/login");
+
+      if (!self.$store.state.user) self.showAuthModal = true;
       return;
     }
 
