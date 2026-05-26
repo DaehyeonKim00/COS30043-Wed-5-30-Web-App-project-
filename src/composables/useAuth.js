@@ -1,4 +1,7 @@
 // src/composables/useAuth.js
+// This file defines a Vue 3 composable that provides reactive state and functions for managing user authentication and authorization.
+// It uses the Vuex store to access user information and provides functions to check if a user is logged in, if they are an admin, and to log out. 
+// It also includes a function to require authentication for certain actions, which can show a modal prompt if the user is not logged in.
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
