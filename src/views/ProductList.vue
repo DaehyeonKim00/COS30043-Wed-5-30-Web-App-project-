@@ -132,8 +132,8 @@ export default {
     // Filter by name and category (applookup2.js filteredUnits pattern)
     filteredProducts() {
       return this.products.filter(p =>
-        (p.name || '').toLowerCase().match(this.filter.name.toLowerCase()) &&
-        (p.category || '').match(this.filter.category)
+        (p.name || '').toLowerCase().includes(this.filter.name.toLowerCase()) &&
+        (p.category || '').includes(this.filter.category)
       )
     },
     // Sort filtered results

@@ -66,11 +66,19 @@
         </div>
       </div>
     </div>
+    <!-- Auth Modal — shown when unauthenticated user tries to view cart (advanced feature - tuan) -->
+    <AuthPromptModal
+      :show="showAuthModal"
+      :message="authModalMessage"
+      @cancel="showAuthModal = false"
+    />
   </div>
 </template>
 
 <script>
 import { removeFromCart, updateCartQuantity } from "../api/cart.js";
+import { useAuth } from "../composables/useAuth.js";
+import AuthPromptModal from "../components/AuthPromptModal.vue";
 import ErrorAlert from "../components/ErrorAlert.vue";
 import PageHeader from "../components/PageHeader.vue";
 import EmptyState from "../components/EmptyState.vue";
@@ -78,7 +86,13 @@ import { readAuthSession, clearAuthSession } from "../utils/authSession.js";
 
 export default {
   name: "Cart",
-  components: { ErrorAlert, PageHeader, EmptyState },
+  components: { ErrorAlert, PageHeader, EmptyState, AuthPromptModal },
+
+  setup() {
+    const { showAuthModal, authModalMessage, closeAuthModal } = useAuth();
+    return { showAuthModal, authModalMessage, closeAuthModal };
+  },
+
   data() {
     return {
       items: [],
@@ -96,15 +110,21 @@ export default {
   },
   mounted() {
     const storeUser = this.$store.state.user;
-    const savedSession = readAuthSession();
+    // Check authentication (advanced feature - tuan)
+    //const savedSession = readAuthSession();
     const sessionUser = storeUser || savedSession.user;
 
     this.userId = sessionUser ? sessionUser.id : null;
 
-    if (!this.userId) {
-      clearAuthSession();
-      this.$store.commit("logout");
-      this.$router.push("/login");
+    //if (!this.userId) {
+    //  clearAuthSession();
+    this.$store.commit("logout");
+    this.$router.push("/login");
+    //  return
+    //}
+    //
+    if (!self.$store.state.user) {
+      self.showAuthModal = true;
       return;
     }
 
