@@ -48,7 +48,9 @@ export function useAuth() {
 
   return {
     user, isLoggedIn, isAdmin,
-    requireAuth, requireAdmin, logout,
+    requireAuth, requireAdmin,
     showAuthModal, authModalMessage, closeAuthModal
+    // logout removed — handled by Bunmi's authSession
+
   }
 }

@@ -145,7 +145,13 @@ export default {
   methods: {
     onModalCancel() { // User clicked "Cancel" on auth modal (advanced feature - tuan)
       this.showAuthModal = false
-      this.$router.go(-1) // go back
+      const prev = document.referrer
+      // If previous page is login or empty, go home instead
+      if (!prev || prev.includes('/login')) {
+        this.$router.push('/home')
+      } else {
+        this.$router.go(-1)
+      }
     },
     deleteItem(cartId) {
       removeFromCart(cartId)
