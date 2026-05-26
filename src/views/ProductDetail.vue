@@ -193,7 +193,7 @@ export default {
       self.msg = ''
 
       if (self.inWishlist) {
-        removeFromWishlist(elf.userFromStore.id, self.product.id)
+        removeFromWishlist(self.userFromStore.id, self.product.id)
           .then(data => {
             if (data && data.success) {
               self.inWishlist = false
@@ -234,6 +234,8 @@ export default {
         .then(data => {
           if (data.success) {
             self.msg = 'Added to cart!'
+          } else {
+            self.err = data.error || 'Failed to add to cart.'
           }
         })
         .catch(() => { self.err = 'Failed to add to cart.' })

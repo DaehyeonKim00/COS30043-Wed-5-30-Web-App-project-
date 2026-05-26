@@ -118,11 +118,15 @@ export default {
     this.userId = sessionUser ? sessionUser.id : null;
 
     if (!this.userId) {
-      clearAuthSession();
-      this.$store.commit("logout");
-      this.$router.push("/login");
+      // This conflict with tuan's advance feature implementation.
+      //clearAuthSession();
+      //this.$store.commit("logout");
+      //this.$router.push("/login");
 
-      if (!self.$store.state.user) self.showAuthModal = true;
+
+      // Show modal instead of redirect
+      this.showAuthModal = true
+      //if (!self.$store.state.user) self.showAuthModal = true;
       return;
     }
 

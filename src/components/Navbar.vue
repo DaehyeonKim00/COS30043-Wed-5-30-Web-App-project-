@@ -129,7 +129,6 @@ import { clearAuthSession } from "../utils/authSession.js";
 export default {
   name: "Navbar",
   components: { SearchAutocomplete },
-  data() {},
   methods: {
     logout() {
       clearAuthSession();
