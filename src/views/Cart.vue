@@ -70,7 +70,7 @@
     <AuthPromptModal
       :show="showAuthModal"
       :message="authModalMessage"
-      @cancel="showAuthModal = false"
+      @cancel="onModalCancel"
     />
   </div>
 </template>
@@ -143,6 +143,10 @@ export default {
       });
   },
   methods: {
+    onModalCancel() { // User clicked "Cancel" on auth modal (advanced feature - tuan)
+      this.showAuthModal = false
+      this.$router.go(-1) // go back
+    },
     deleteItem(cartId) {
       removeFromCart(cartId)
         .then(() => {
