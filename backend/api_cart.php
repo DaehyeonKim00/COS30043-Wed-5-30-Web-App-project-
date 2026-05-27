@@ -33,6 +33,12 @@ switch ($method) {
     $user_id = $input['user_id'];
     $product_id = $input['product_id'];
     $quantity = isset($input['quantity']) ? $input['quantity'] : 1;
+
+    // Check stock limit
+    $stockResult = mysqli_query($conn, "SELECT stock FROM products WHERE id=$product_id");
+    $stockRow = mysqli_fetch_assoc($stockResult);
+    $stock = (int)$stockRow['stock'];
+
     $check = mysqli_query($conn,
       "SELECT id, quantity FROM cart
        WHERE user_id=$user_id AND product_id=$product_id"
@@ -44,9 +50,22 @@ switch ($method) {
       } else {
         $newQty = $row['quantity'] + $quantity;
       }
+
+      // Block if exceeds stock
+      if ($newQty > $stock) {
+        echo json_encode(['success' => false, 'error' => 'Exceeds available stock of ' . $stock]);
+        exit;
+      }
+
       mysqli_query($conn, "UPDATE cart SET quantity=$newQty WHERE id={$row['id']}");
       echo json_encode(['success' => true, 'updated' => true]);
     } else {
+      // Block if exceeds stock
+      if ($quantity > $stock) {
+        echo json_encode(['success' => false, 'error' => 'Exceeds available stock of ' . $stock]);
+        exit;
+      }
+
       mysqli_query($conn,
         "INSERT INTO cart (user_id, product_id, quantity)
          VALUES ($user_id, $product_id, $quantity)"

@@ -39,7 +39,10 @@ switch ($method) {
 
     // Step 2: If less than 4, fill with random from same category
     if (count($products) < 4) {
-        $existingIds = array_map(fn($p) => $p['id'], $products);
+        $existingIds = array();
+        foreach ($products as $p) {
+          $existingIds[] = $p['id'];
+        }
         $existingIds[] = $current_id;
         $excludeIds = implode(',', $existingIds);
 

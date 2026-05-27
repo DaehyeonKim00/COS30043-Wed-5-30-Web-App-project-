@@ -1,5 +1,7 @@
 const cartApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_cart.php'
-
+// Advanced feature - This file handles all HTTP requests to the backend cart API (api_cart.php).
+// This file is consumed by src/composables/useCart.js,
+// which wraps these functions with Vue 3 reactive state (computed(), ref()) and Vuex store synchronisation so components never need to call cart.js directly.
 export function getCart(userId) {
   return fetch(cartApiUrl + '?user_id=' + userId)
     .then(response => {

@@ -1,46 +1,55 @@
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+// This file defines a Vue 3 composable that provides reactive state and functions for managing user authentication and authorization.
+// It uses the Vuex store to access user information and provides functions to check if a user is logged in, if they are an admin, and to log out.
+// It also includes a function to require authentication for certain actions, which can show a modal prompt if the user is not logged in.
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 // Modal/guard composable — UI only. Session/logout is handled by authSession.js
 export function useAuth() {
-  const router = useRouter()
-  const store = useStore()
+  const router = useRouter();
+  const store = useStore();
 
-  const user = computed(() => store.state.user)
-  const isLoggedIn = computed(() => store.state.isLoggedIn)
-  const isAdmin = computed(() => store.state.user?.role === 'admin')
+  const user = computed(() => store.state.user);
+  const isLoggedIn = computed(() => store.state.isLoggedIn);
+  const isAdmin = computed(() => store.state.user?.role === "admin");
 
   // Modal state
-  const showAuthModal = ref(false)
-  const authModalMessage = ref('Please log in to continue.')
+  const showAuthModal = ref(false);
+  const authModalMessage = ref("Please log in to continue.");
 
-  function requireAuth(message = 'You must be logged in to access this page.') {
+  function requireAuth(message = "You must be logged in to access this page.") {
     if (!store.state.user) {
-      authModalMessage.value = message
-      showAuthModal.value = true
-      return false
+      authModalMessage.value = message;
+      showAuthModal.value = true;
+      return false;
     }
-    return true
+    return true;
   }
 
   function closeAuthModal() {
-    showAuthModal.value = false
+    showAuthModal.value = false;
   }
 
   function requireAdmin() {
-    if (!store.state.user || store.state.user.role !== 'admin') {
-      router.push('/home')
-      return false
+    if (!store.state.user || store.state.user.role !== "admin") {
+      router.push("/home");
+      return false;
     }
-    return true
+    return true;
   }
 
   return {
-    user, isLoggedIn, isAdmin,
-    requireAuth, requireAdmin,
-    showAuthModal, authModalMessage, closeAuthModal
-  }
+    user,
+    isLoggedIn,
+    isAdmin,
+    requireAuth,
+    requireAdmin,
+    showAuthModal,
+    authModalMessage,
+    closeAuthModal,
+    // logout removed — handled by Bunmi's authSession
+  };
 }
 
-export default useAuth
+export default useAuth;

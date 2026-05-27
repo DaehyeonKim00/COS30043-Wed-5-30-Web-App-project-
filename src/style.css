@@ -288,6 +288,38 @@ a:hover {
   object-fit: cover;
 }
 
+/* ---------- SearchAutocomplete (Daehyeon Kim Advanced Feature) ---------- */
+.search-autocomplete {
+  position: relative;
+}
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  z-index: 1050;
+  background-color: var(--surface);
+}
+.autocomplete-dropdown .list-group-item {
+  cursor: pointer;
+  border-radius: 0;
+}
+.autocomplete-dropdown .list-group-item.active {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+.autocomplete-dropdown .list-group-item.active .text-muted {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.autocomplete-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
 /* ---------- Admin ---------- */
 .preview-img {
   width: 100%;
@@ -303,4 +335,67 @@ a:hover {
   height: 55px;
   object-fit: cover;
   border-radius: 6px;
+}
+
+
+/* AuthPromptModal (Tuan Advanced Feature) */
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.auth-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 28px;
+  min-width: 280px;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.auth-modal-msg {
+  font-size: 15px;
+  margin-bottom: 20px;
+  color: #333;
+}
+.auth-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* CSS Styling for AuthBadge.vue */
+.auth-badge {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1080;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.92);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+.auth-badge__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #7cff7a;
+  box-shadow: 0 0 0 4px rgba(124, 255, 122, 0.16);
+}
+
+.auth-badge__dot--expired {
+  background: #ff6b6b;
+  box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.16);
 }
