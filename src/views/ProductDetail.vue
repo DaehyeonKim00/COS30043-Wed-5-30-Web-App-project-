@@ -96,6 +96,12 @@
       :message="authModalMessage"
       @cancel="closeAuthModal"
     />
+    <!-- Auth Modal — shown when unauthenticated user tries to add to cart/wishlist -->
+    <AuthPromptModal
+      :show="showAuthModal"
+      :message="authModalMessage"
+      @cancel="closeAuthModal"
+    />
   </div>
 </template>
 
