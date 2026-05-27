@@ -130,6 +130,7 @@ import ErrorAlert from '../components/ErrorAlert.vue'
 import SuccessMessage from '../components/SuccessMessage.vue'
 import PageHeader from '../components/PageHeader.vue'
 import EmptyState from '../components/EmptyState.vue'
+import { readAuthSession } from '../utils/authSession.js'
 
 export default {
   name: 'Checkout',
@@ -158,7 +159,10 @@ export default {
   },
   mounted() {
     var self = this
-    self.user = JSON.parse(localStorage.getItem('user'))
+    const storeUser = self.$store.state.user
+    const savedSession = readAuthSession()
+    self.user = storeUser || savedSession.user
+
     if (!self.user) {
       self.$router.push('/login')
       return

@@ -67,18 +67,25 @@
       </div>
     </div>
   </div>
+  <AuthPromptModal
+    :show="showAuthModal"
+    :message="authModalMessage"
+    @cancel="onModalCancel"
+  />
 </template>
 
 <script>
-import { removeFromCart, updateCartQuantity } from "../api/cart.js";
+import { removeFromCart, updateCartQuantity, getCart } from "../api/cart.js";
 import ErrorAlert from "../components/ErrorAlert.vue";
 import PageHeader from "../components/PageHeader.vue";
 import EmptyState from "../components/EmptyState.vue";
+import AuthPromptModal from "../components/AuthPromptModal.vue";
+import { useAuth } from "../composables/useAuth.js";
 import { readAuthSession, clearAuthSession } from "../utils/authSession.js";
 
 export default {
   name: "Cart",
-  components: { ErrorAlert, PageHeader, EmptyState },
+  components: { ErrorAlert, PageHeader, EmptyState, AuthPromptModal },
   data() {
     return {
       items: [],
@@ -94,19 +101,46 @@ export default {
         .toFixed(2);
     },
   },
+  setup() {
+    const { showAuthModal, authModalMessage, closeAuthModal, requireAuth } =
+      useAuth();
+    return { showAuthModal, authModalMessage, closeAuthModal, requireAuth };
+  },
   mounted() {
-    const storeUser = this.$store.state.user;
-    const savedSession = readAuthSession();
-    const sessionUser = storeUser || savedSession.user;
+    // Retrieve stored details from authSession.
+    const session = readAuthSession();
+    if (session) {
+      this.$store.commit("setUser", session.user || null);
+      this.$store.commit("setRememberMe", !!session.rememberMe);
+      if (session.expiresAt) {
+        this.$store.commit("setExpiresAt", session.expiresAt);
+      }
+    }
 
-    this.userId = sessionUser ? sessionUser.id : null;
+    // Check if session is fresh (not just if user exists)
+    const hasFreshAuth = Boolean(
+      session?.expiresAt && Date.now() < session.expiresAt,
+    );
+    const isExpired =
+      session?.user && !hasFreshAuth && !this.$store.state.rememberMe;
 
-    if (!this.userId) {
+    // Handle expiry directly
+    if (isExpired) {
       clearAuthSession();
       this.$store.commit("logout");
-      this.$router.push("/login");
+      this.showAuthModal = true; // Directly set modal
+      this.authModalMessage = "Your session has expired. Please log in again.";
+      return; // Stop here
+    }
+
+    // Handle no user/guest edge case
+    if (!this.$store.state.user) {
+      this.showAuthModal = true;
       return;
     }
+
+    // IfsSession is valid, load cart
+    this.userId = this.$store.state.user?.id || null;
 
     this.isLoading = true;
     getCart(this.userId)
@@ -121,6 +155,15 @@ export default {
       });
   },
   methods: {
+    onModalCancel() {
+      this.closeAuthModal();
+      const prev = document.referrer;
+      if (!prev || prev.includes("/login")) {
+        this.$router.push("/home");
+      } else {
+        this.$router.go(-1);
+      }
+    },
     deleteItem(cartId) {
       removeFromCart(cartId)
         .then(() => {
