@@ -66,11 +66,19 @@
         </div>
       </div>
     </div>
+    <!-- Auth Modal — shown when unauthenticated user tries to view cart (advanced feature - tuan) -->
+    <AuthPromptModal
+      :show="showAuthModal"
+      :message="authModalMessage"
+      @cancel="onModalCancel"
+    />
   </div>
 </template>
 
 <script>
-import { removeFromCart, updateCartQuantity } from "../api/cart.js";
+import { useAuth } from "../composables/useAuth.js";
+import AuthPromptModal from "../components/AuthPromptModal.vue";
+import { getCart, removeFromCart, updateCartQuantity } from "../api/cart.js";
 import ErrorAlert from "../components/ErrorAlert.vue";
 import PageHeader from "../components/PageHeader.vue";
 import EmptyState from "../components/EmptyState.vue";
@@ -78,7 +86,13 @@ import { readAuthSession, clearAuthSession } from "../utils/authSession.js";
 
 export default {
   name: "Cart",
-  components: { ErrorAlert, PageHeader, EmptyState },
+  components: { ErrorAlert, PageHeader, EmptyState, AuthPromptModal },
+
+  setup() {
+    const { showAuthModal, authModalMessage, closeAuthModal } = useAuth();
+    return { showAuthModal, authModalMessage, closeAuthModal };
+  },
+
   data() {
     return {
       items: [],
@@ -96,15 +110,23 @@ export default {
   },
   mounted() {
     const storeUser = this.$store.state.user;
+    // Check authentication (advanced feature - tuan)
+    //const savedSession = readAuthSession();
     const savedSession = readAuthSession();
     const sessionUser = storeUser || savedSession.user;
 
     this.userId = sessionUser ? sessionUser.id : null;
 
     if (!this.userId) {
-      clearAuthSession();
-      this.$store.commit("logout");
-      this.$router.push("/login");
+      // This conflict with tuan's advance feature implementation.
+      //clearAuthSession();
+      //this.$store.commit("logout");
+      //this.$router.push("/login");
+
+
+      // Show modal instead of redirect
+      this.showAuthModal = true
+      //if (!self.$store.state.user) self.showAuthModal = true;
       return;
     }
 
@@ -121,6 +143,16 @@ export default {
       });
   },
   methods: {
+    onModalCancel() { // User clicked "Cancel" on auth modal (advanced feature - tuan)
+      this.showAuthModal = false
+      const prev = document.referrer
+      // If previous page is login or empty, go home instead
+      if (!prev || prev.includes('/login')) {
+        this.$router.push('/home')
+      } else {
+        this.$router.go(-1)
+      }
+    },
     deleteItem(cartId) {
       removeFromCart(cartId)
         .then(() => {

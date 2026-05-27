@@ -65,21 +65,7 @@
 
               <!-- Search bar (visible on mobile collapse + desktop xl) -->
               <div class="col-12 col-xl-3 my-2 my-xl-0">
-                <form class="d-flex" @submit.prevent="submitSearch">
-                  <input
-                    v-model="searchKeyword"
-                    class="form-control form-control-sm me-2"
-                    type="search"
-                    placeholder="Search products..."
-                    aria-label="Search"
-                  />
-                  <button
-                    class="btn btn-primary btn-sm text-nowrap"
-                    type="submit"
-                  >
-                    Search
-                  </button>
-                </form>
+                <SearchAutocomplete />
               </div>
 
               <!-- Right links -->
@@ -87,6 +73,11 @@
                 <ul class="navbar-nav justify-content-xl-end">
                   <!-- When not logged in -->
                   <template v-if="!$store.state.isLoggedIn">
+                    <li class="nav-item">
+                      <router-link class="nav-link" to="/cart"
+                        >Cart</router-link
+                      >
+                    </li>
                     <li class="nav-item">
                       <router-link class="nav-link" to="/register"
                         >Register</router-link
@@ -131,23 +122,14 @@
 </template>
 
 <script>
+import SearchAutocomplete from "./SearchAutocomplete.vue";
+
 import { clearAuthSession } from "../utils/authSession.js";
 
 export default {
   name: "Navbar",
-  data() {
-    return {
-      searchKeyword: "",
-    };
-  },
+  components: { SearchAutocomplete },
   methods: {
-    submitSearch() {
-      var keyword = this.searchKeyword.trim();
-      if (keyword) {
-        this.$router.push("/products?q=" + encodeURIComponent(keyword));
-        this.searchKeyword = "";
-      }
-    },
     logout() {
       clearAuthSession();
       this.$store.commit("logout");
