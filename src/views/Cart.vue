@@ -66,6 +66,12 @@
         </div>
       </div>
     </div>
+    <!-- Auth Modal — shown when unauthenticated user tries to view cart (advanced feature - tuan) -->
+    <AuthPromptModal
+      :show="showAuthModal"
+      :message="authModalMessage"
+      @cancel="onModalCancel"
+    />
   </div>
   <AuthPromptModal
     :show="showAuthModal"
@@ -158,6 +164,17 @@ export default {
     onModalCancel() {
       this.closeAuthModal();
       const prev = document.referrer;
+      if (!prev || prev.includes("/login")) {
+        this.$router.push("/home");
+      } else {
+        this.$router.go(-1);
+      }
+    },
+    onModalCancel() {
+      // User clicked "Cancel" on auth modal (advanced feature - tuan)
+      this.showAuthModal = false;
+      const prev = document.referrer;
+      // If previous page is login or empty, go home instead
       if (!prev || prev.includes("/login")) {
         this.$router.push("/home");
       } else {

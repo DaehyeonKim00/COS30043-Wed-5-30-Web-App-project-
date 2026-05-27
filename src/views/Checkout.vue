@@ -14,10 +14,8 @@
     />
 
     <div v-else class="row g-4">
-
       <!-- Left: Shipping + Payment form -->
       <div class="col-12 col-lg-7">
-
         <!-- Shipping details -->
         <div class="card shadow-sm mb-4">
           <div class="card-body">
@@ -25,17 +23,32 @@
 
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input v-model="form.name" type="text" class="form-control" placeholder="Letters only, min 2 characters" />
+              <input
+                v-model="form.name"
+                type="text"
+                class="form-control"
+                placeholder="Letters only, min 2 characters"
+              />
             </div>
 
             <div class="mb-3">
               <label class="form-label">Phone</label>
-              <input v-model="form.phone" type="text" class="form-control" placeholder="Digits only, 8-15 characters" />
+              <input
+                v-model="form.phone"
+                type="text"
+                class="form-control"
+                placeholder="Digits only, 8-15 characters"
+              />
             </div>
 
             <div class="mb-3">
               <label class="form-label">Address</label>
-              <textarea v-model="form.address" class="form-control" rows="2" placeholder="Street, city, postcode"></textarea>
+              <textarea
+                v-model="form.address"
+                class="form-control"
+                rows="2"
+                placeholder="Street, city, postcode"
+              ></textarea>
             </div>
           </div>
         </div>
@@ -110,131 +123,149 @@
               :disabled="isSubmitting"
               @click="submitOrder"
             >
-              {{ isSubmitting ? 'Placing Order...' : 'Place Order' }}
+              {{ isSubmitting ? "Placing Order..." : "Place Order" }}
             </button>
 
             <SuccessMessage :message="msg" />
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
 
 <script>
-import { getCart } from '../api/cart.js'
-import { placeOrder } from '../api/checkout.js'
-import LoadingSpinner from '../components/LoadingSpinner.vue'
-import ErrorAlert from '../components/ErrorAlert.vue'
-import SuccessMessage from '../components/SuccessMessage.vue'
-import PageHeader from '../components/PageHeader.vue'
-import EmptyState from '../components/EmptyState.vue'
-import { readAuthSession } from '../utils/authSession.js'
+import { getCart } from "../api/cart.js";
+import { placeOrder } from "../api/checkout.js";
+import LoadingSpinner from "../components/LoadingSpinner.vue";
+import ErrorAlert from "../components/ErrorAlert.vue";
+import SuccessMessage from "../components/SuccessMessage.vue";
+import PageHeader from "../components/PageHeader.vue";
+import EmptyState from "../components/EmptyState.vue";
+import { readAuthSession } from "../utils/authSession.js";
 
 export default {
-  name: 'Checkout',
-  components: { LoadingSpinner, ErrorAlert, SuccessMessage, PageHeader, EmptyState },
+  name: "Checkout",
+  components: {
+    LoadingSpinner,
+    ErrorAlert,
+    SuccessMessage,
+    PageHeader,
+    EmptyState,
+  },
   data() {
     return {
       items: [],
       isLoading: false,
       isSubmitting: false,
-      err: '',
-      submitErr: '',
-      msg: '',
+      err: "",
+      submitErr: "",
+      msg: "",
       user: null,
       form: {
-        name: '',
-        phone: '',
-        address: '',
-        payment: 'cash'
-      }
-    }
+        name: "",
+        phone: "",
+        address: "",
+        payment: "cash",
+      },
+    };
   },
   computed: {
     totalPrice() {
-      return this.items.reduce( (sum, item) => sum + item.price * item.quantity, 0).toFixed(2)
-    }
+      return this.items
+        .reduce((sum, item) => sum + item.price * item.quantity, 0)
+        .toFixed(2);
+    },
   },
   mounted() {
-    var self = this
-    const storeUser = self.$store.state.user
-    const savedSession = readAuthSession()
-    self.user = storeUser || savedSession.user
+    var self = this;
+    const storeUser = self.$store.state.user;
+    const savedSession = readAuthSession();
+    self.user = storeUser || savedSession.user;
 
     if (!self.user) {
-      self.$router.push('/login')
-      return
+      self.$router.push("/login");
+      return;
     }
 
-    self.form.name = self.user.name || ''
+    self.user = sessionUser;
+    self.form.name = self.user.name || "";
 
-    self.isLoading = true
+    self.isLoading = true;
     getCart(self.user.id)
-      .then( data => {
-        self.items = Array.isArray(data) ? data : []
-        self.isLoading = false
+      .then((data) => {
+        self.items = Array.isArray(data) ? data : [];
+        self.isLoading = false;
       })
-      .catch(error => {
-        self.err = 'Failed to load cart.'
-        self.isLoading = false
-      })
+      .catch((error) => {
+        self.err = "Failed to load cart.";
+        self.isLoading = false;
+      });
   },
   methods: {
     submitOrder() {
-      var self = this
-      self.submitErr = ''
-      self.msg = ''
+      var self = this;
+      self.submitErr = "";
+      self.msg = "";
 
       // Form validation
-      var nameRegex = /^[A-Za-z ]+$/
-      if (!self.form.name || !nameRegex.test(self.form.name) || self.form.name.trim().length < 2) {
-        self.submitErr = 'Please enter a valid name (letters only, min 2 characters).'
-        return
+      var nameRegex = /^[A-Za-z ]+$/;
+      if (
+        !self.form.name ||
+        !nameRegex.test(self.form.name) ||
+        self.form.name.trim().length < 2
+      ) {
+        self.submitErr =
+          "Please enter a valid name (letters only, min 2 characters).";
+        return;
       }
-      var phoneRegex = /^[0-9]{8,15}$/
+      var phoneRegex = /^[0-9]{8,15}$/;
       if (!phoneRegex.test(self.form.phone)) {
-        self.submitErr = 'Please enter a valid phone number (digits only, 8-15 characters).'
-        return
+        self.submitErr =
+          "Please enter a valid phone number (digits only, 8-15 characters).";
+        return;
       }
       if (!self.form.address || self.form.address.trim().length < 5) {
-        self.submitErr = 'Please enter a valid shipping address.'
-        return
+        self.submitErr = "Please enter a valid shipping address.";
+        return;
       }
       if (!self.form.payment) {
-        self.submitErr = 'Please select a payment method.'
-        return
+        self.submitErr = "Please select a payment method.";
+        return;
       }
 
-      var payload = self.items.map( it => ({
+      var payload = self.items.map((it) => ({
         product_id: it.product_id,
         quantity: it.quantity,
-        price: it.price
-      }))
+        price: it.price,
+      }));
 
-      self.isSubmitting = true
+      self.isSubmitting = true;
       placeOrder(self.user.id, self.totalPrice, payload)
-        .then( data => {
-          self.isSubmitting = false
-          console.log('Checkout response:', data)
+        .then((data) => {
+          self.isSubmitting = false;
+          console.log("Checkout response:", data);
           if (data && data.success) {
-            self.msg = 'Order #' + data.order_id + ' placed successfully! Redirecting...'
+            self.msg =
+              "Order #" +
+              data.order_id +
+              " placed successfully! Redirecting...";
             // Refresh Vuex cart so Navbar count resets to 0
-            self.$store.dispatch('fetchCart')
-            setTimeout( () => {
-              self.$router.push('/orderhistory')
-            }, 1500)
+            self.$store.dispatch("fetchCart");
+            setTimeout(() => {
+              self.$router.push("/orderhistory");
+            }, 1500);
           } else {
-            self.submitErr = (data && data.error) ? data.error : 'Failed to place order.'
+            self.submitErr =
+              data && data.error ? data.error : "Failed to place order.";
           }
         })
-        .catch(error => {
-          self.isSubmitting = false
-          console.error('Checkout error:', error)
-          self.submitErr = 'Failed to place order. Please try again.'
-        })
-    }
-  }
-}
+        .catch((error) => {
+          self.isSubmitting = false;
+          console.error("Checkout error:", error);
+          self.submitErr = "Failed to place order. Please try again.";
+        });
+    },
+  },
+};
 </script>
