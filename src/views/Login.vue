@@ -90,8 +90,8 @@ export default {
           if (!user || user.error) {
             self.err = "Invalid email or password.";
           } else {
-            const expiresAt = Date.now() + 30 * 60 * 1000;
             // Save the auth session using the selected persistence mode.
+            const expiresAt = Date.now() + 1 * 60 * 1000;
             saveAuthSession(user, self.rememberMe, expiresAt);
             // Save to Vuex store (used by Navbar, badge, and route guards)
             self.$store.commit("setUser", user);

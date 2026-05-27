@@ -73,26 +73,25 @@
       @cancel="onModalCancel"
     />
   </div>
+  <AuthPromptModal
+    :show="showAuthModal"
+    :message="authModalMessage"
+    @cancel="onModalCancel"
+  />
 </template>
 
 <script>
-import { useAuth } from "../composables/useAuth.js";
-import AuthPromptModal from "../components/AuthPromptModal.vue";
-import { getCart, removeFromCart, updateCartQuantity } from "../api/cart.js";
+import { removeFromCart, updateCartQuantity, getCart } from "../api/cart.js";
 import ErrorAlert from "../components/ErrorAlert.vue";
 import PageHeader from "../components/PageHeader.vue";
 import EmptyState from "../components/EmptyState.vue";
+import AuthPromptModal from "../components/AuthPromptModal.vue";
+import { useAuth } from "../composables/useAuth.js";
 import { readAuthSession, clearAuthSession } from "../utils/authSession.js";
 
 export default {
   name: "Cart",
   components: { ErrorAlert, PageHeader, EmptyState, AuthPromptModal },
-
-  setup() {
-    const { showAuthModal, authModalMessage, closeAuthModal } = useAuth();
-    return { showAuthModal, authModalMessage, closeAuthModal };
-  },
-
   data() {
     return {
       items: [],
@@ -108,27 +107,46 @@ export default {
         .toFixed(2);
     },
   },
+  setup() {
+    const { showAuthModal, authModalMessage, closeAuthModal, requireAuth } =
+      useAuth();
+    return { showAuthModal, authModalMessage, closeAuthModal, requireAuth };
+  },
   mounted() {
-    const storeUser = this.$store.state.user;
-    // Check authentication (advanced feature - tuan)
-    //const savedSession = readAuthSession();
-    const savedSession = readAuthSession();
-    const sessionUser = storeUser || savedSession.user;
+    // Retrieve stored details from authSession.
+    const session = readAuthSession();
+    if (session) {
+      this.$store.commit("setUser", session.user || null);
+      this.$store.commit("setRememberMe", !!session.rememberMe);
+      if (session.expiresAt) {
+        this.$store.commit("setExpiresAt", session.expiresAt);
+      }
+    }
 
-    this.userId = sessionUser ? sessionUser.id : null;
+    // Check if session is fresh (not just if user exists)
+    const hasFreshAuth = Boolean(
+      session?.expiresAt && Date.now() < session.expiresAt,
+    );
+    const isExpired =
+      session?.user && !hasFreshAuth && !this.$store.state.rememberMe;
 
-    if (!this.userId) {
-      // This conflict with tuan's advance feature implementation.
-      //clearAuthSession();
-      //this.$store.commit("logout");
-      //this.$router.push("/login");
+    // Handle expiry directly
+    if (isExpired) {
+      clearAuthSession();
+      this.$store.commit("logout");
+      this.showAuthModal = true; // Directly set modal
+      this.authModalMessage = "Your session has expired. Please log in again.";
+      return; // Stop here
+    }
 
-
-      // Show modal instead of redirect
-      this.showAuthModal = true
-      //if (!self.$store.state.user) self.showAuthModal = true;
+    // Handle no user/guest edge case
+    if (!this.$store.state.user) {
+      this.showAuthModal = true;
       return;
     }
+
+    // IfsSession is valid, load cart
+    this.userId = this.$store.state.user?.id || null;
 
     this.isLoading = true;
     getCart(this.userId)
@@ -143,14 +161,24 @@ export default {
       });
   },
   methods: {
-    onModalCancel() { // User clicked "Cancel" on auth modal (advanced feature - tuan)
-      this.showAuthModal = false
-      const prev = document.referrer
-      // If previous page is login or empty, go home instead
-      if (!prev || prev.includes('/login')) {
-        this.$router.push('/home')
+    onModalCancel() {
+      this.closeAuthModal();
+      const prev = document.referrer;
+      if (!prev || prev.includes("/login")) {
+        this.$router.push("/home");
       } else {
-        this.$router.go(-1)
+        this.$router.go(-1);
+      }
+    },
+    onModalCancel() {
+      // User clicked "Cancel" on auth modal (advanced feature - tuan)
+      this.showAuthModal = false;
+      const prev = document.referrer;
+      // If previous page is login or empty, go home instead
+      if (!prev || prev.includes("/login")) {
+        this.$router.push("/home");
+      } else {
+        this.$router.go(-1);
       }
     },
     deleteItem(cartId) {

@@ -179,12 +179,12 @@ export default {
   },
   mounted() {
     var self = this;
-    const storeUser = this.$store.state.user;
+    const storeUser = self.$store.state.user;
     const savedSession = readAuthSession();
-    const sessionUser = storeUser || (savedSession && savedSession.user);
+    self.user = storeUser || savedSession.user;
 
-    if (!sessionUser) {
-      this.$router.push("/login");
+    if (!self.user) {
+      self.$router.push("/login");
       return;
     }
 
