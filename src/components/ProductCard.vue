@@ -5,7 +5,7 @@
             :src="product.image"
             class="card-img-top"
             :alt="product.name">
-            
+
         <!-- Product details -->
         <div class="card-body d-flex flex-column">
             <p class="text-muted mb-2">{{ product.category }}</p>

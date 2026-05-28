@@ -4,32 +4,32 @@
 
     <ErrorAlert :message="err" />
     <div v-if="msg" class="alert alert-success">{{ msg }}</div>
- 
+
     <div class="mb-3">
       <label class="form-label">Name</label>
       <input v-model="form.name" type="text" class="form-control" placeholder="Letters only, min 2 characters" />
     </div>
- 
+
     <div class="mb-3">
       <label class="form-label">Email</label>
       <input v-model="form.email" type="email" class="form-control" placeholder="you@email.com" />
     </div>
- 
+
     <div class="mb-3">
       <label class="form-label">Password</label>
       <input v-model="form.password" type="password" class="form-control" placeholder="Min. 8 characters" />
     </div>
- 
+
     <button class="btn btn-primary w-100" @click="submit" :disabled="isLoading">
       {{ isLoading ? 'Registering...' : 'Register' }}
     </button>
- 
+
     <p class="mt-3 text-center">
       Already have an account? <router-link to="/login">Login here</router-link>
     </p>
   </div>
 </template>
- 
+
 <script>
 import { registerUser } from '../api/register.js'
 import ErrorAlert from '../components/ErrorAlert.vue'
@@ -51,7 +51,7 @@ export default {
       var self = this
       self.err = ''
       self.msg = ''
- 
+
       // T7 — Form Validation
       if (!self.form.name || !self.form.email || !self.form.password) {
         self.err = 'All fields are required.'
@@ -76,7 +76,7 @@ export default {
         self.err = 'Password must be at least 8 characters.'
         return
       }
- 
+
       self.isLoading = true
       registerUser(self.form.name, self.form.email, self.form.password)
         .then( data => {
@@ -96,4 +96,4 @@ export default {
   }
 }
 </script>
- 
+
