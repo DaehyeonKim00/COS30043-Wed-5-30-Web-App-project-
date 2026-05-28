@@ -77,7 +77,7 @@
                     :disabled="removingId === item.id"
                     @click="removeWishlistItem(item.id)"
                   >
-                    {{ removingId === item.id ? "..." : "Remove" }}
+                    {{ removingId === item.id ? '...' : 'Remove' }}
                   </button>
                 </li>
               </ul>
@@ -101,108 +101,112 @@
 </template>
 
 <script>
-import { getUserInfo, updateUserInfo } from "../api/myPage.js";
-import { getWishlist, removeWishlistById } from "../api/wishlist.js";
-import LoadingSpinner from "../components/LoadingSpinner.vue";
-import ErrorAlert from "../components/ErrorAlert.vue";
-import SuccessMessage from "../components/SuccessMessage.vue";
-import PageHeader from "../components/PageHeader.vue";
-import EmptyState from "../components/EmptyState.vue";
+import { getUserInfo, updateUserInfo } from '../api/myPage.js'
+import { getWishlist, removeWishlistById } from '../api/wishlist.js'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ErrorAlert from '../components/ErrorAlert.vue'
+import SuccessMessage from '../components/SuccessMessage.vue'
+import PageHeader from '../components/PageHeader.vue'
 
 export default {
-  name: "MyPage",
-  components: {
-    LoadingSpinner,
-    ErrorAlert,
-    SuccessMessage,
-    PageHeader,
-    EmptyState,
-  },
+  name: 'MyPage',
+  components: { LoadingSpinner, ErrorAlert, SuccessMessage, PageHeader },
   data() {
     return {
       user: {
-        name: "",
-        email: "",
+        name: '',
+        email: ''
       },
       isLoading: false,
-      err: "",
-      msg: "",
-
+      err: '',
+      msg: '',
       wishlist: [],
       wishlistLoading: false,
-      wishlistErr: "",
+      wishlistErr: '',
       removingId: null,
-
-      // ===== TEMPORARY (login not implemented yet) =====
-      // Using a fixed user id so the page can be tested against the DB.
-      //userId: 1
-      // ===== REAL CODE (use after login is implemented) =====
-      // The router guard owns access control. Read the current user from the store.
-      userId: null,
-      // (or from Vuex: this.$store.state.user.id)
-    };
+      userId: null
+    }
   },
   mounted() {
-    var self = this;
+    var self = this
 
-    // Determine the user id from the store; if absent, skip loading (guard should redirect).
-    self.userId = this.$store.state.user ? this.$store.state.user.id : null;
-    if (!self.userId) return;
+    // The router guard owns access control. Read the current user from the store.
+    self.userId = self.$store.state.user ? self.$store.state.user.id : null
+    if (!self.userId) return
 
     // Load profile
-    self.isLoading = true;
+    self.isLoading = true
     getUserInfo(self.userId)
-      .then((data) => {
-        self.user = data;
-        self.isLoading = false;
+      .then(data => {
+        self.user = data
+        self.isLoading = false
       })
-      .catch((error) => {
-        self.err = "Failed to load profile. Please try again later.";
-        self.isLoading = false;
-      });
+      .catch(error => {
+        self.err = 'Failed to load profile. Please try again later.'
+        self.isLoading = false
+      })
 
     // Load wishlist
-    self.wishlistLoading = true;
+    self.wishlistLoading = true
     getWishlist(self.userId)
-      .then((data) => {
-        self.wishlist = data;
-        self.wishlistLoading = false;
+      .then(data => {
+        self.wishlist = data
+        self.wishlistLoading = false
       })
-      .catch((error) => {
-        self.wishlistErr = "Failed to load wishlist.";
-        self.wishlistLoading = false;
-      });
+      .catch(error => {
+        self.wishlistErr = 'Failed to load wishlist.'
+        self.wishlistLoading = false
+      })
   },
   methods: {
     saveProfile() {
-      var self = this;
+      var self = this
+      self.err = ''
+      self.msg = ''
+
+      // Form validation
+      if (!self.user.name || !self.user.email) {
+        self.err = 'Name and email are required.'
+        return
+      }
+      var nameRegex = /^[A-Za-z ]+$/
+      if (!nameRegex.test(self.user.name) || self.user.name.trim().length < 2) {
+        self.err = 'Name must contain letters only (min 2 characters).'
+        return
+      }
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(self.user.email)) {
+        self.err = 'Please enter a valid email address.'
+        return
+      }
+
       updateUserInfo(self.userId, self.user.name, self.user.email)
-        .then((data) => {
-          self.msg = "Profile updated successfully.";
+        .then(data => {
+          self.msg = 'Profile updated successfully.'
         })
-        .catch((error) => {
-          self.err = "Failed to update profile.";
-        });
+        .catch(error => {
+          self.err = 'Failed to update profile.'
+        })
     },
     removeWishlistItem(wishlistId) {
-      var self = this;
-      self.removingId = wishlistId;
-      self.wishlistErr = "";
+      var self = this
+      self.removingId = wishlistId
+      self.wishlistErr = ''
 
       removeWishlistById(wishlistId)
-        .then((data) => {
+        .then(data => {
           if (data && data.success) {
-            self.wishlist = self.wishlist.filter((w) => w.id !== wishlistId);
+            self.wishlist = self.wishlist.filter(w => w.id !== wishlistId)
           } else {
-            self.wishlistErr = (data && data.error) || "Failed to remove item.";
+            self.wishlistErr = (data && data.error) || 'Failed to remove item.'
           }
-          self.removingId = null;
+          self.removingId = null
         })
-        .catch((error) => {
-          self.wishlistErr = "Failed to remove item.";
-          self.removingId = null;
-        });
-    },
-  },
-};
+        .catch(error => {
+          self.wishlistErr = 'Failed to remove item.'
+          self.removingId = null
+        })
+    }
+  }
+}
 </script>

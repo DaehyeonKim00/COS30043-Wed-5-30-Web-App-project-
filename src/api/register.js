@@ -13,11 +13,5 @@ export function registerUser(name, email, password) {
       password: password
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error registering:', error)
-      throw error
-    })
+    .then(response => response.json())
 }

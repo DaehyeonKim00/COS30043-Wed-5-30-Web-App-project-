@@ -2,13 +2,7 @@ const wishlistApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/bac
 
 export function getWishlist(userId) {
   return fetch(wishlistApiUrl + '?user_id=' + userId)
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error fetching wishlist:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function addToWishlist(userId, productId) {
@@ -22,13 +16,7 @@ export function addToWishlist(userId, productId) {
       product_id: productId
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error adding to wishlist:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function removeFromWishlist(userId, productId) {
@@ -42,13 +30,7 @@ export function removeFromWishlist(userId, productId) {
       product_id: productId
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error removing from wishlist:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function removeWishlistById(wishlistId) {
@@ -61,11 +43,5 @@ export function removeWishlistById(wishlistId) {
       id: wishlistId
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error removing wishlist item:', error)
-      throw error
-    })
+    .then(response => response.json())
 }

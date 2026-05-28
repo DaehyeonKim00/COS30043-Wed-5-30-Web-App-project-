@@ -12,11 +12,5 @@ export function placeOrder(userId, totalPrice, items) {
       items: items
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error placing order:', error)
-      throw error
-    })
+    .then(response => response.json())
 }

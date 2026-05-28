@@ -66,6 +66,7 @@
         </div>
       </div>
     </div>
+
     <!-- Auth Modal — shown when unauthenticated user tries to view cart (advanced feature - tuan) -->
     <AuthPromptModal
       :show="showAuthModal"
@@ -73,162 +74,149 @@
       @cancel="onModalCancel"
     />
   </div>
-  <AuthPromptModal
-    :show="showAuthModal"
-    :message="authModalMessage"
-    @cancel="onModalCancel"
-  />
 </template>
 
 <script>
-import { removeFromCart, updateCartQuantity, getCart } from "../api/cart.js";
-import ErrorAlert from "../components/ErrorAlert.vue";
-import PageHeader from "../components/PageHeader.vue";
-import EmptyState from "../components/EmptyState.vue";
-import AuthPromptModal from "../components/AuthPromptModal.vue";
-import { useAuth } from "../composables/useAuth.js";
-import { readAuthSession, clearAuthSession } from "../utils/authSession.js";
+import { removeFromCart, updateCartQuantity, getCart } from '../api/cart.js'
+import ErrorAlert from '../components/ErrorAlert.vue'
+import PageHeader from '../components/PageHeader.vue'
+import EmptyState from '../components/EmptyState.vue'
+import AuthPromptModal from '../components/AuthPromptModal.vue'
+import { useAuth } from '../composables/useAuth.js'
+import { readAuthSession, clearAuthSession } from '../utils/authSession.js'
 
 export default {
-  name: "Cart",
+  name: 'Cart',
   components: { ErrorAlert, PageHeader, EmptyState, AuthPromptModal },
+  setup() {
+    var auth = useAuth()
+    return {
+      showAuthModal: auth.showAuthModal,
+      authModalMessage: auth.authModalMessage,
+      closeAuthModal: auth.closeAuthModal
+    }
+  },
   data() {
     return {
       items: [],
       isLoading: false,
-      err: "",
-      userId: null,
-    };
+      err: ''
+    }
   },
   computed: {
     totalPrice() {
       return this.items
         .reduce((sum, item) => sum + item.price * item.quantity, 0)
-        .toFixed(2);
-    },
-  },
-  setup() {
-    const { showAuthModal, authModalMessage, closeAuthModal, requireAuth } =
-      useAuth();
-    return { showAuthModal, authModalMessage, closeAuthModal, requireAuth };
+        .toFixed(2)
+    }
   },
   mounted() {
+    var self = this
+
     // Retrieve stored details from authSession.
-    const session = readAuthSession();
-    if (session) {
-      this.$store.commit("setUser", session.user || null);
-      this.$store.commit("setRememberMe", !!session.rememberMe);
+    var session = readAuthSession()
+    if (session && session.user) {
+      self.$store.commit('setUser', session.user)
+      self.$store.commit('setRememberMe', !!session.rememberMe)
       if (session.expiresAt) {
-        this.$store.commit("setExpiresAt", session.expiresAt);
+        self.$store.commit('setExpiresAt', session.expiresAt)
       }
     }
 
     // Check if session is fresh (not just if user exists)
-    const hasFreshAuth = Boolean(
-      session?.expiresAt && Date.now() < session.expiresAt,
-    );
-    const isExpired =
-      session?.user && !hasFreshAuth && !this.$store.state.rememberMe;
+    var hasFreshAuth = Boolean(
+      session && session.expiresAt && Date.now() < session.expiresAt
+    )
+    var isExpired =
+      session && session.user && !hasFreshAuth && !self.$store.state.rememberMe
 
     // Handle expiry directly
     if (isExpired) {
-      clearAuthSession();
-      this.$store.commit("logout");
-      this.showAuthModal = true; // Directly set modal
-      this.authModalMessage = "Your session has expired. Please log in again.";
-      return; // Stop here
+      clearAuthSession()
+      self.$store.commit('logout')
+      self.showAuthModal = true
+      self.authModalMessage = 'Your session has expired. Please log in again.'
+      return
     }
 
     // Handle no user/guest edge case
-    if (!this.$store.state.user) {
-      this.showAuthModal = true;
-      return;
+    if (!self.$store.state.user) {
+      self.showAuthModal = true
+      return
     }
 
-    // IfsSession is valid, load cart
-    this.userId = this.$store.state.user?.id || null;
+    // If session is valid, load cart
+    var userId = self.$store.state.user.id
 
-    this.isLoading = true;
-    getCart(this.userId)
-      .then((data) => {
-        this.items = data;
-        this.isLoading = false;
-        this.$store.commit("setCart", data);
+    self.isLoading = true
+    getCart(userId)
+      .then(data => {
+        self.items = data
+        self.isLoading = false
+        self.$store.commit('setCart', data)
       })
-      .catch(() => {
-        this.err = "Failed to load cart.";
-        this.isLoading = false;
-      });
+      .catch(error => {
+        self.err = 'Failed to load cart.'
+        self.isLoading = false
+      })
   },
   methods: {
     onModalCancel() {
-      this.closeAuthModal();
-      const prev = document.referrer;
-      if (!prev || prev.includes("/login")) {
-        this.$router.push("/home");
-      } else {
-        this.$router.go(-1);
-      }
-    },
-    onModalCancel() {
       // User clicked "Cancel" on auth modal (advanced feature - tuan)
-      this.showAuthModal = false;
-      const prev = document.referrer;
-      // If previous page is login or empty, go home instead
-      if (!prev || prev.includes("/login")) {
-        this.$router.push("/home");
-      } else {
-        this.$router.go(-1);
-      }
+      this.closeAuthModal()
+      this.$router.push('/home')
     },
     deleteItem(cartId) {
+      var self = this
       removeFromCart(cartId)
         .then(() => {
-          this.items = this.items.filter((i) => i.id !== cartId);
-          this.$store.dispatch("fetchCart");
+          self.items = self.items.filter(i => i.id !== cartId)
+          self.$store.dispatch('fetchCart')
         })
         .catch(() => {
-          this.err = "Failed to remove item.";
-        });
+          self.err = 'Failed to remove item.'
+        })
     },
     increaseQty(item) {
+      var self = this
       if (parseInt(item.quantity) >= parseInt(item.stock)) {
-        this.err =
-          "Cannot exceed available stock (" + item.stock + " available)";
-        return;
+        self.err =
+          'Cannot exceed available stock (' + item.stock + ' available)'
+        return
       }
 
-      const newQty = parseInt(item.quantity) + 1;
+      var newQty = parseInt(item.quantity) + 1
       updateCartQuantity(item.id, newQty)
-        .then((data) => {
+        .then(data => {
           if (data.success) {
-            item.quantity = newQty;
-            this.err = "";
-            this.$store.dispatch("fetchCart");
+            item.quantity = newQty
+            self.err = ''
+            self.$store.dispatch('fetchCart')
           }
         })
         .catch(() => {
-          this.err = "Failed to update quantity.";
-        });
+          self.err = 'Failed to update quantity.'
+        })
     },
     decreaseQty(item) {
+      var self = this
       if (parseInt(item.quantity) <= 1) {
-        this.deleteItem(item.id);
-        return;
+        self.deleteItem(item.id)
+        return
       }
 
-      const newQty = parseInt(item.quantity) - 1;
+      var newQty = parseInt(item.quantity) - 1
       updateCartQuantity(item.id, newQty)
-        .then((data) => {
+        .then(data => {
           if (data.success) {
-            item.quantity = newQty;
-            this.$store.dispatch("fetchCart");
+            item.quantity = newQty
+            self.$store.dispatch('fetchCart')
           }
         })
         .catch(() => {
-          this.err = "Failed to update quantity.";
-        });
-    },
-  },
-};
+          self.err = 'Failed to update quantity.'
+        })
+    }
+  }
+}
 </script>

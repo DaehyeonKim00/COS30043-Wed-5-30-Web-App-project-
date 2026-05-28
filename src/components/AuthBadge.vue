@@ -9,47 +9,46 @@
 </template>
 
 <script>
-import { formatDuration } from "../utils/authSession.js";
+import { formatDuration } from '../utils/authSession.js'
 
 export default {
-  name: "AuthBadge",
+  name: 'AuthBadge',
   data() {
     return {
       now: Date.now(),
-      timerId: null,
-    };
+      timerId: null
+    }
   },
   computed: {
     expiresAt() {
-      return this.$store.state.expiresAt;
+      return this.$store.state.expiresAt
     },
     isExpired() {
-      return !this.expiresAt || this.now >= this.expiresAt;
+      return !this.expiresAt || this.now >= this.expiresAt
     },
     badgeText() {
       if (this.isExpired) {
-        return "Expired";
+        return 'Session expired — please log in again'
       }
-
-      const remaining = this.expiresAt - this.now;
-      return `Expires in ${formatDuration(remaining)}`;
-    },
+      var remaining = this.expiresAt - this.now
+      return 'Expires in ' + formatDuration(remaining)
+    }
   },
   mounted() {
-    this.timerId = window.setInterval(() => {
-      this.now = Date.now();
-      if (this.isExpired && this.timerId) {
-        window.clearInterval(this.timerId);
-        this.timerId = null;
+    var self = this
+    self.timerId = window.setInterval(() => {
+      self.now = Date.now()
+      if (self.isExpired && self.timerId) {
+        window.clearInterval(self.timerId)
+        self.timerId = null
       }
-    }, 1000);
+    }, 1000)
   },
   beforeUnmount() {
     if (this.timerId) {
-      window.clearInterval(this.timerId);
-      this.timerId = null;
+      window.clearInterval(this.timerId)
+      this.timerId = null
     }
-  },
-};
+  }
+}
 </script>
-

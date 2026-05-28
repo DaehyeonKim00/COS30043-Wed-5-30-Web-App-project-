@@ -2,24 +2,12 @@ const reviewApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backe
 
 export function getReviews(productId) {
   return fetch(reviewApiUrl + '?product_id=' + productId)
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error fetching reviews:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function getAllReviews() {
   return fetch(reviewApiUrl)
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error fetching all reviews:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function postReview(userId, productId, rating, comment) {
@@ -35,13 +23,7 @@ export function postReview(userId, productId, rating, comment) {
       comment: comment
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error posting review:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function updateReview(id, rating, comment) {
@@ -56,13 +38,7 @@ export function updateReview(id, rating, comment) {
       comment: comment
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error updating review:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function deleteReview(id) {
@@ -75,11 +51,5 @@ export function deleteReview(id) {
       id: id
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error deleting review:', error)
-      throw error
-    })
+    .then(response => response.json())
 }

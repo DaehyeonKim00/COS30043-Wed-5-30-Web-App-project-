@@ -2,13 +2,7 @@ const myPageApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backe
 
 export function getUserInfo(userId) {
   return fetch(myPageApiUrl + '?user_id=' + userId)
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error fetching user info:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function updateUserInfo(userId, name, email) {
@@ -23,11 +17,5 @@ export function updateUserInfo(userId, name, email) {
       email: email
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error updating user info:', error)
-      throw error
-    })
+    .then(response => response.json())
 }

@@ -78,7 +78,7 @@ export default {
         self.allProducts = Array.isArray(data) ? data : []
       })
       .catch(error => {
-        console.error('SearchAutocomplete: failed to load products', error)
+        self.allProducts = []
       })
   },
   methods: {

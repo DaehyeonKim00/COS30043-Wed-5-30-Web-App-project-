@@ -4,13 +4,7 @@ const cartApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend
 // which wraps these functions with Vue 3 reactive state (computed(), ref()) and Vuex store synchronisation so components never need to call cart.js directly.
 export function getCart(userId) {
   return fetch(cartApiUrl + '?user_id=' + userId)
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error fetching cart:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function addToCart(userId, productId, quantity, forceQuantity = false) {
@@ -26,13 +20,7 @@ export function addToCart(userId, productId, quantity, forceQuantity = false) {
       force_quantity: forceQuantity
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error adding to cart:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function removeFromCart(id) {
@@ -45,13 +33,7 @@ export function removeFromCart(id) {
       id: id
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error removing from cart:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function updateCartQuantity(cartId, quantity) {
@@ -65,11 +47,5 @@ export function updateCartQuantity(cartId, quantity) {
       quantity: quantity
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error updating cart:', error)
-      throw error
-    })
+    .then(response => response.json())
 }

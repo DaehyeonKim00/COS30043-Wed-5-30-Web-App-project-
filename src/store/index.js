@@ -18,7 +18,7 @@ export const store = createStore({
   mutations: {
     setUser(state, user) {
       state.user = user
-      state.isLoggedIn = true
+      state.isLoggedIn = !!user
     },
     setRememberMe(state, rememberMe) {
       state.rememberMe = !!rememberMe
@@ -56,8 +56,8 @@ export const store = createStore({
         .then(data => {
           commit('setCart', Array.isArray(data) ? data : [])
         })
-        .catch(err => {
-          console.error('fetchCart failed:', err)
+        .catch(() => {
+          commit('setCart', [])
         })
     }
   }

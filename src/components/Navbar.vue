@@ -122,19 +122,18 @@
 </template>
 
 <script>
-import SearchAutocomplete from "./SearchAutocomplete.vue";
-
-import { clearAuthSession } from "../utils/authSession.js";
+import SearchAutocomplete from './SearchAutocomplete.vue'
+import { clearAuthSession } from '../utils/authSession.js'
 
 export default {
-  name: "Navbar",
+  name: 'Navbar',
   components: { SearchAutocomplete },
   methods: {
     logout() {
-      clearAuthSession();
-      this.$store.commit("logout");
-      this.$router.push("/login");
-    },
-  },
-};
+      clearAuthSession()
+      this.$store.commit('logout')
+      this.$router.push('/login')
+    }
+  }
+}
 </script>

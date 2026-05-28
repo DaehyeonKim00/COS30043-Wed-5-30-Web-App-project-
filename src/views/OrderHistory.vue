@@ -36,46 +36,41 @@
 </template>
 
 <script>
-import { getOrders } from "../api/orderHistory.js";
-import LoadingSpinner from "../components/LoadingSpinner.vue";
-import ErrorAlert from "../components/ErrorAlert.vue";
-import PageHeader from "../components/PageHeader.vue";
+import { getOrders } from '../api/orderHistory.js'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ErrorAlert from '../components/ErrorAlert.vue'
+import PageHeader from '../components/PageHeader.vue'
 
 export default {
+  name: 'OrderHistory',
   components: { LoadingSpinner, ErrorAlert, PageHeader },
-  name: "OrderHistory",
   data() {
     return {
       orders: [],
       isLoading: false,
-      err: "",
-      msg: "",
-
-      // ===== TEMPORARY (login not implemented yet) =====
-      // Using a fixed user id so the page can be tested against the DB.
-      //userId: 1
-      // ===== REAL CODE (use after login is implemented) =====
-      userId: null,
-      // (or from Vuex: this.$store.state.user.id)
-    };
+      err: '',
+      msg: '',
+      userId: null
+    }
   },
   mounted() {
-    var self = this;
+    var self = this
 
-    // Determine the user id from the store; if absent, skip loading (guard should redirect).
-    self.userId = this.$store.state.user ? this.$store.state.user.id : null;
-    if (!self.userId) return;
-    self.isLoading = true;
+    // The router guard owns access control. Read the current user from the store.
+    self.userId = self.$store.state.user ? self.$store.state.user.id : null
+    if (!self.userId) return
+
+    self.isLoading = true
     getOrders(self.userId)
-      .then((data) => {
-        self.orders = data;
-        self.msg = "Successful!";
-        self.isLoading = false;
+      .then(data => {
+        self.orders = data
+        self.msg = 'Successful!'
+        self.isLoading = false
       })
-      .catch((error) => {
-        self.err = "Failed to load orders. Please try again later.";
-        self.isLoading = false;
-      });
-  },
-};
+      .catch(error => {
+        self.err = 'Failed to load orders. Please try again later.'
+        self.isLoading = false
+      })
+  }
+}
 </script>

@@ -368,34 +368,3 @@ a:hover {
   justify-content: center;
 }
 
-/* CSS Styling for AuthBadge.vue */
-.auth-badge {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 1080;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 0.9rem;
-  border-radius: 999px;
-  background: rgba(20, 20, 20, 0.92);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 600;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(10px);
-}
-
-.auth-badge__dot {
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  background: #7cff7a;
-  box-shadow: 0 0 0 4px rgba(124, 255, 122, 0.16);
-}
-
-.auth-badge__dot--expired {
-  background: #ff6b6b;
-  box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.16);
-}

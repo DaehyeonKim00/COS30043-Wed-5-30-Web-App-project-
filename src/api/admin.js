@@ -2,13 +2,7 @@ const adminApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backen
 
 export function getProducts() {
   return fetch(adminApiUrl)
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error fetching products:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function addProduct(product) {
@@ -19,13 +13,7 @@ export function addProduct(product) {
     },
     body: JSON.stringify(product)
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error adding product:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function updateProduct(product) {
@@ -36,13 +24,7 @@ export function updateProduct(product) {
     },
     body: JSON.stringify(product)
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error updating product:', error)
-      throw error
-    })
+    .then(response => response.json())
 }
 
 export function deleteProduct(id) {
@@ -55,11 +37,5 @@ export function deleteProduct(id) {
       id: id
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error deleting product:', error)
-      throw error
-    })
+    .then(response => response.json())
 }

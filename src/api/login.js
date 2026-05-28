@@ -12,11 +12,5 @@ export function loginUser(email, password) {
       password: password
     })
   })
-    .then(response => {
-      return response.json()
-    })
-    .catch(error => {
-      console.error('Error logging in:', error)
-      throw error
-    })
+    .then(response => response.json())
 }

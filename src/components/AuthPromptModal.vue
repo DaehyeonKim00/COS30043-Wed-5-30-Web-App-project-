@@ -4,7 +4,7 @@
       <p class="auth-modal-msg">{{ message }}</p>
       <div class="auth-modal-actions">
         <button class="btn btn-outline-secondary btn-sm" @click="cancel">Cancel</button>
-        <router-link to="/login" class="btn btn-dark btn-sm" @click="cancel">Login</router-link>
+        <router-link to="/login" class="btn btn-dark btn-sm">Login</router-link>
       </div>
     </div>
   </div>
