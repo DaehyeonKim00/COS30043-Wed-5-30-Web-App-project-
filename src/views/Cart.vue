@@ -77,12 +77,13 @@
 </template>
 
 <script>
-import { removeFromCart, updateCartQuantity, getCart } from '../api/cart.js'
+import { getCart } from '../api/cart.js'
+import { useAuth } from '../composables/useAuth.js'
+import { useCart } from '../composables/useCart.js'
 import ErrorAlert from '../components/ErrorAlert.vue'
 import PageHeader from '../components/PageHeader.vue'
 import EmptyState from '../components/EmptyState.vue'
 import AuthPromptModal from '../components/AuthPromptModal.vue'
-import { useAuth } from '../composables/useAuth.js'
 import { readAuthSession, clearAuthSession } from '../utils/authSession.js'
 
 export default {
@@ -90,10 +91,14 @@ export default {
   components: { ErrorAlert, PageHeader, EmptyState, AuthPromptModal },
   setup() {
     var auth = useAuth()
+    // useCart composable — provides removeItem and updateQuantity with auto Vuex sync
+    var cartLogic = useCart()
     return {
       showAuthModal: auth.showAuthModal,
       authModalMessage: auth.authModalMessage,
-      closeAuthModal: auth.closeAuthModal
+      closeAuthModal: auth.closeAuthModal,
+      removeItem: cartLogic.removeItem,
+      updateQuantity: cartLogic.updateQuantity
     }
   },
   data() {
@@ -166,37 +171,37 @@ export default {
       this.closeAuthModal()
       this.$router.push('/home')
     },
+    reloadCart() { // Helper to reload cart after updates (advanced feature - tuan) 
+      var self = this
+      var userId = self.$store.state.user.id
+      return getCart(userId).then(data => {
+        self.items = data
+        self.$store.commit('setCart', data)
+      })
+    },
     deleteItem(cartId) {
       var self = this
-      removeFromCart(cartId)
-        .then(() => {
-          self.items = self.items.filter(i => i.id !== cartId)
-          self.$store.dispatch('fetchCart')
-        })
-        .catch(() => {
-          self.err = 'Failed to remove item.'
-        })
+      // useCart composable — removeItem handles API + Vuex sync
+      self.removeItem(cartId)
+        .then(() => self.reloadCart())
+        .catch(() => { self.err = 'Failed to remove item.' })
     },
     increaseQty(item) {
       var self = this
       if (parseInt(item.quantity) >= parseInt(item.stock)) {
-        self.err =
-          'Cannot exceed available stock (' + item.stock + ' available)'
+        self.err = 'Cannot exceed available stock (' + item.stock + ' available)'
         return
       }
-
       var newQty = parseInt(item.quantity) + 1
-      updateCartQuantity(item.id, newQty)
+      // useCart composable — updateQuantity handles API + Vuex sync
+      self.updateQuantity(item.id, newQty)
         .then(data => {
           if (data.success) {
-            item.quantity = newQty
             self.err = ''
-            self.$store.dispatch('fetchCart')
+            self.reloadCart()
           }
         })
-        .catch(() => {
-          self.err = 'Failed to update quantity.'
-        })
+        .catch(() => { self.err = 'Failed to update quantity.' })
     },
     decreaseQty(item) {
       var self = this
@@ -206,16 +211,13 @@ export default {
       }
 
       var newQty = parseInt(item.quantity) - 1
-      updateCartQuantity(item.id, newQty)
+      self.updateQuantity(item.id, newQty)
         .then(data => {
           if (data.success) {
-            item.quantity = newQty
-            self.$store.dispatch('fetchCart')
+            self.reloadCart()
           }
         })
-        .catch(() => {
-          self.err = 'Failed to update quantity.'
-        })
+        .catch(() => { self.err = 'Failed to update quantity.' })
     }
   }
 }

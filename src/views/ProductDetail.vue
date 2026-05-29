@@ -72,6 +72,7 @@
 
           <!-- Feedback message -->
           <div v-if="msg" class="alert alert-success mt-3 py-2">{{ msg }}</div>
+          <div v-if="actionErr" class="alert alert-danger mt-3 py-2">{{ actionErr }}</div>
         </div>
       </div>
     </div>
@@ -144,6 +145,7 @@ export default {
       product: null,
       isLoading: false,
       err: '',
+      actionErr: '', 
       msg: '',
       inWishlist: false,
       recommendedProducts: []
@@ -206,7 +208,7 @@ export default {
       var self = this
       // useAuth composable
       if (!self.requireAuth('Please log in to add to wishlist!')) return
-      self.err = ''
+      self.actionErr = ''
       self.msg = ''
 
       if (self.inWishlist) {
@@ -216,12 +218,10 @@ export default {
               self.inWishlist = false
               self.msg = 'Removed from wishlist.'
             } else {
-              self.err = (data && data.error) || 'Failed to update wishlist.'
+              self.actionErr = (data && data.error) || 'Failed to update wishlist.'
             }
           })
-          .catch(error => {
-            self.err = 'Failed to update wishlist.'
-          })
+          .catch(() => { self.actionErr = 'Failed to update wishlist.' })
       } else {
         addToWishlist(self.userFromStore.id, self.product.id)
           .then(data => {
@@ -229,16 +229,14 @@ export default {
               self.inWishlist = true
               self.msg = 'Added to wishlist!'
             } else if (data && data.message === 'Already in wishlist') {
-              // Backend says it's already saved — sync the UI state instead of erroring.
               self.inWishlist = true
               self.msg = 'Already in wishlist.'
             } else {
-              self.err = 'Failed to update wishlist.'
+              self.actionErr = 'Failed to update wishlist.'
             }
           })
-          .catch(error => {
-            self.err = 'Failed to update wishlist.'
-          })
+          .catch(() => { self.actionErr = 'Failed to update wishlist.' })
+
       }
     },
     addToCartHandler() {
@@ -246,6 +244,8 @@ export default {
       var self = this
       // useAuth composable — requireAuth shows modal if not logged in
       if (!self.requireAuth('Please log in to add to cart!')) return
+      self.actionErr = ''
+      self.msg = ''
 
       // useCart composable — addItem handles API + Vuex sync automatically
       self
@@ -254,12 +254,10 @@ export default {
           if (data.success) {
             self.msg = 'Added to cart!'
           } else {
-            self.err = data.error || 'Failed to add to cart.'
+            self.actionErr = data.error || 'Failed to add to cart.'
           }
         })
-        .catch(() => {
-          self.err = 'Failed to add to cart.'
-        })
+        .catch(() => { self.actionErr = 'Failed to add to cart.' })
     }
   }
 }
