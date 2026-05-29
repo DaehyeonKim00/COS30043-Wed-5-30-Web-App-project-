@@ -20,7 +20,7 @@
           <img :src="item.image" :alt="item.name" class="cart-thumb" />
 
           <div class="flex-grow-1">
-            <h5 class="mb-1">{{ item.name }}</h5>
+            <h2 class="h5 mb-1">{{ item.name }}</h2>
             <p class="text-muted mb-2">
               ${{ Number(item.price).toFixed(2) }} each
             </p>
@@ -59,7 +59,7 @@
         <div
           class="card-body d-flex justify-content-between align-items-center"
         >
-          <h4 class="mb-0">Total: ${{ totalPrice }}</h4>
+          <h2 class="h4 mb-0">Total: ${{ totalPrice }}</h2>
           <router-link to="/checkout" class="btn btn-primary"
             >Proceed to Checkout</router-link
           >

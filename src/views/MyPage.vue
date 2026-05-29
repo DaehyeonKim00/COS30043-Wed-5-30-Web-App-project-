@@ -14,16 +14,16 @@
       <div class="col-md-6">
         <div class="card shadow-sm">
           <div class="card-body">
-            <h3>My Profile</h3>
+            <h2 class="h4">My Profile</h2>
 
             <div class="mb-3">
-              <label class="form-label">Name</label>
-              <input v-model="user.name" type="text" class="form-control" />
+              <label for="profileName" class="form-label">Name</label>
+              <input id="profileName" v-model="user.name" type="text" class="form-control" />
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input v-model="user.email" type="email" class="form-control" />
+              <label for="profileEmail" class="form-label">Email</label>
+              <input id="profileEmail" v-model="user.email" type="email" class="form-control" />
             </div>
 
             <button class="btn btn-primary" @click="saveProfile">
@@ -39,7 +39,7 @@
       <div class="col-md-6">
         <div class="card shadow-sm">
           <div class="card-body">
-            <h3>Wishlist</h3>
+            <h2 class="h4">Wishlist</h2>
 
             <!-- Wishlist loading -->
             <div v-if="wishlistLoading" class="text-center py-3">
@@ -88,7 +88,7 @@
         <!-- Order History link -->
         <div class="card shadow-sm mt-4">
           <div class="card-body">
-            <h3>Order History</h3>
+            <h2 class="h4">Order History</h2>
             <p class="text-muted">View all your past orders.</p>
             <router-link to="/orderhistory" class="btn btn-dark">
               View Order History

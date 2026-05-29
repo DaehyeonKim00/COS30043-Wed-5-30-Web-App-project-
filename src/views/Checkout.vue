@@ -19,11 +19,12 @@
         <!-- Shipping details -->
         <div class="card shadow-sm mb-4">
           <div class="card-body">
-            <h4 class="mb-3">Shipping Details</h4>
+            <h2 class="h4 mb-3">Shipping Details</h2>
 
             <div class="mb-3">
-              <label class="form-label">Full Name</label>
+              <label for="checkoutName" class="form-label">Full Name</label>
               <input
+                id="checkoutName"
                 v-model="form.name"
                 type="text"
                 class="form-control"
@@ -32,8 +33,9 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Phone</label>
+              <label for="checkoutPhone" class="form-label">Phone</label>
               <input
+                id="checkoutPhone"
                 v-model="form.phone"
                 type="text"
                 class="form-control"
@@ -42,8 +44,9 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Address</label>
+              <label for="checkoutAddress" class="form-label">Address</label>
               <textarea
+                id="checkoutAddress"
                 v-model="form.address"
                 class="form-control"
                 rows="2"
@@ -56,7 +59,7 @@
         <!-- Payment method -->
         <div class="card shadow-sm">
           <div class="card-body">
-            <h4 class="mb-3">Payment Method</h4>
+            <h2 class="h4 mb-3">Payment Method</h2>
 
             <div class="form-check mb-2">
               <input
@@ -95,7 +98,7 @@
       <div class="col-12 col-lg-5">
         <div class="card shadow-sm">
           <div class="card-body">
-            <h4 class="mb-3">Order Summary</h4>
+            <h2 class="h4 mb-3">Order Summary</h2>
 
             <ul class="list-group list-group-flush mb-3">
               <li

@@ -25,7 +25,7 @@
         <div class="col-12 col-md-6">
           <p class="text-muted mb-1">{{ product.category }}</p>
           <h2 class="fw-bold mb-3">{{ product.name }}</h2>
-          <h4 class="text-dark mb-3">${{ product.price }}</h4>
+          <p class="h4 text-dark mb-3">${{ product.price }}</p>
           <p class="mb-4">{{ product.description }}</p>
 
           <!-- Stock status -->
@@ -78,7 +78,7 @@
 
     <!-- Recommended Products - For advanced feature -->
     <div v-if="recommendedProducts.length > 0" class="mt-5">
-      <h4 class="fw-bold mb-4">You May Also Like</h4>
+      <h2 class="h4 fw-bold mb-4">You May Also Like</h2>
       <div class="row g-4">
         <div
           v-for="item in recommendedProducts"

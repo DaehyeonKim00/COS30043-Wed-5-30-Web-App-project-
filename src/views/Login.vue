@@ -5,8 +5,9 @@
     <ErrorAlert :message="err" />
 
     <div class="mb-3">
-      <label class="form-label">Email</label>
+      <label for="loginEmail" class="form-label">Email</label>
       <input
+        id="loginEmail"
         v-model="form.email"
         type="email"
         class="form-control"
@@ -15,8 +16,9 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Password</label>
+      <label for="loginPassword" class="form-label">Password</label>
       <input
+        id="loginPassword"
         v-model="form.password"
         type="password"
         class="form-control"

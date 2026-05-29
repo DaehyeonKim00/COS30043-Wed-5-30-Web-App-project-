@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import { store } from '../store'
 import { clearAuthSession, readAuthSession } from '../utils/authSession.js'
 
@@ -93,7 +93,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory('/cos30043/s104838522/test/'),
+  history: createWebHashHistory('/cos30043/s104838522/test/'),
   routes
 })
 

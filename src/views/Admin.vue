@@ -5,16 +5,16 @@
     <!-- Product form -->
     <div class="card shadow-sm mb-4">
       <div class="card-body">
-        <h3>{{ editingId ? 'Edit Product' : 'Add Product' }}</h3>
+        <h2 class="h4">{{ editingId ? 'Edit Product' : 'Add Product' }}</h2>
 
         <div class="mb-3">
-          <label class="form-label">Product Name</label>
-          <input v-model="form.name" class="form-control" type="text">
+          <label for="productName" class="form-label">Product Name</label>
+          <input id="productName" v-model="form.name" class="form-control" type="text">
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Category</label>
-          <select v-model="form.category" class="form-select mb-2">
+          <label for="productCategory" class="form-label">Category</label>
+          <select id="productCategory" v-model="form.category" class="form-select mb-2">
             <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
             <option value="__new__">+ Add new category…</option>
           </select>
@@ -25,30 +25,31 @@
             type="text"
             class="form-control"
             placeholder="Enter new category name"
+            aria-label="New category name"
           />
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Description</label>
-          <textarea v-model="form.description" class="form-control" rows="3"></textarea>
+          <label for="productDescription" class="form-label">Description</label>
+          <textarea id="productDescription" v-model="form.description" class="form-control" rows="3"></textarea>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Price</label>
-          <input v-model.number="form.price" class="form-control" type="number">
+          <label for="productPrice" class="form-label">Price</label>
+          <input id="productPrice" v-model.number="form.price" class="form-control" type="number">
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Stock</label>
-          <input v-model.number="form.stock" class="form-control" type="number">
+          <label for="productStock" class="form-label">Stock</label>
+          <input id="productStock" v-model.number="form.stock" class="form-control" type="number">
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Image URL</label>
-          <input v-model="form.image" class="form-control" type="text">
+          <label for="productImage" class="form-label">Image URL</label>
+          <input id="productImage" v-model="form.image" class="form-control" type="text">
         </div>
 
-        <img v-if="form.image" :src="form.image" class="preview-img mb-3">
+        <img v-if="form.image" :src="form.image" alt="Product image preview" class="preview-img mb-3">
 
         <br>
 
@@ -64,7 +65,7 @@
       </div>
     </div>
 
-    <h3>Product List</h3>
+    <h2 class="h4">Product List</h2>
 
     <!-- Loading state -->
     <LoadingSpinner v-if="isLoading" />
@@ -89,7 +90,7 @@
         <tbody>
           <tr v-for="product in products" :key="product.id">
             <td>
-              <img v-if="product.image" :src="product.image" class="table-img">
+              <img v-if="product.image" :src="product.image" :alt="product.name" class="table-img">
               <span v-else>No image</span>
             </td>
             <td>{{ product.name }}</td>

@@ -51,11 +51,11 @@
     <!-- Review form (only when a product is selected and user is logged in) -->
     <div v-if="viewMode === 'product' && selectedProductId && user" class="card shadow-sm mb-4">
       <div class="card-body">
-        <h3>{{ editingId ? 'Edit Review' : 'Write a Review' }}</h3>
+        <h2 class="h4">{{ editingId ? 'Edit Review' : 'Write a Review' }}</h2>
 
         <div class="mb-3">
-          <label class="form-label">Star Rating</label>
-          <select v-model="form.rating" class="form-select">
+          <label for="reviewRating" class="form-label">Star Rating</label>
+          <select id="reviewRating" v-model="form.rating" class="form-select">
             <option value="5">★★★★★ 5 Stars</option>
             <option value="4">★★★★ 4 Stars</option>
             <option value="3">★★★ 3 Stars</option>
@@ -65,8 +65,8 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Review</label>
-          <textarea v-model="form.comment" class="form-control" rows="4"></textarea>
+          <label for="reviewComment" class="form-label">Review</label>
+          <textarea id="reviewComment" v-model="form.comment" class="form-control" rows="4"></textarea>
         </div>
 
         <button class="btn btn-primary me-2" @click="saveReview">
@@ -89,10 +89,10 @@
 
     <!-- Review list -->
     <div v-else-if="viewMode === 'all' || selectedProductId">
-      <h4 class="mb-3">
+      <h2 class="h4 mb-3">
         {{ viewMode === 'all' ? 'All Reviews' : 'Reviews for this product' }}
         <span class="badge bg-secondary">{{ reviews.length }}</span>
-      </h4>
+      </h2>
 
       <p v-if="reviews.length === 0" class="text-muted">No reviews yet.</p>
 
@@ -114,7 +114,7 @@
                 <span class="fw-bold">{{ review.product_name }}</span>
               </router-link>
 
-              <h5>{{ review.name }}</h5>
+              <h3 class="h5">{{ review.name }}</h3>
               <p class="text-warning fs-4 mb-1">{{ stars(review.rating) }}</p>
               <p class="text-muted small mb-2" v-if="review.created_at">
                 {{ formatDate(review.created_at) }}

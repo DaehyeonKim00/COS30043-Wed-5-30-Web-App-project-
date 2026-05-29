@@ -23,6 +23,10 @@
 
   --accent:     #c97b3c;
   --accent-2:   #e8a26b;
+
+  /* Darker accent for button backgrounds — meets WCAG AA contrast (>= 4.5:1) against white text */
+  --btn-accent:       #9c5a26;
+  --btn-accent-hover: #804819;
 }
 
 /* ---------- Base ---------- */
@@ -63,14 +67,14 @@ a:hover {
 
 /* ---------- Bootstrap overrides ---------- */
 .btn-primary {
-  background-color: var(--accent) !important;
-  border-color: var(--accent) !important;
+  background-color: var(--btn-accent) !important;
+  border-color: var(--btn-accent) !important;
   color: #fff !important;
 }
 .btn-primary:hover,
 .btn-primary:focus {
-  background-color: var(--accent-2) !important;
-  border-color: var(--accent-2) !important;
+  background-color: var(--btn-accent-hover) !important;
+  border-color: var(--btn-accent-hover) !important;
 }
 
 .btn-dark {
@@ -101,13 +105,13 @@ a:hover {
 }
 
 .btn-success {
-  background-color: var(--accent) !important;
-  border-color: var(--accent) !important;
+  background-color: var(--btn-accent) !important;
+  border-color: var(--btn-accent) !important;
   color: #fff !important;
 }
 .btn-success:hover {
-  background-color: var(--accent-2) !important;
-  border-color: var(--accent-2) !important;
+  background-color: var(--btn-accent-hover) !important;
+  border-color: var(--btn-accent-hover) !important;
 }
 
 .card {
@@ -116,10 +120,10 @@ a:hover {
 }
 
 .badge.bg-success {
-  background-color: var(--accent) !important;
+  background-color: var(--btn-accent) !important;
 }
 .badge.bg-secondary {
-  background-color: var(--wood-3) !important;
+  background-color: var(--wood-4) !important;
 }
 
 /* ---------- Auth badge ---------- */
@@ -306,8 +310,8 @@ a:hover {
   border-radius: 0;
 }
 .autocomplete-dropdown .list-group-item.active {
-  background-color: var(--accent) !important;
-  border-color: var(--accent) !important;
+  background-color: var(--btn-accent) !important;
+  border-color: var(--btn-accent) !important;
   color: #fff !important;
 }
 .autocomplete-dropdown .list-group-item.active .text-muted {

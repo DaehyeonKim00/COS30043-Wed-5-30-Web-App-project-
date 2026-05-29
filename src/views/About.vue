@@ -40,7 +40,7 @@
       <div class="row g-4">
         <div class="col-12 col-md-4" v-for="feature in features" :key="feature.title">
           <div class="card h-100 border-0 shadow-sm text-center p-4">
-            <h5 class="fw-bold mb-2">{{ feature.title }}</h5>
+            <h3 class="h5 fw-bold mb-2">{{ feature.title }}</h3>
             <p class="text-muted mb-0">{{ feature.desc }}</p>
           </div>
         </div>
@@ -54,7 +54,7 @@
       <div class="row g-4">
         <div class="col-12 col-md-6">
           <div class="card h-100 border-0 shadow-sm p-4">
-            <h4 class="fw-bold mb-3">Contact Info</h4>
+            <h3 class="h4 fw-bold mb-3">Contact Info</h3>
             <p><strong>Email:</strong> support@swinmusicshop.com</p>
             <p><strong>Phone:</strong> (03) 9000 1234</p>
             <p><strong>Opening Hours:</strong> Monday - Friday, 9:00 AM - 5:00 PM</p>
@@ -64,7 +64,7 @@
 
         <div class="col-12 col-md-6">
           <div class="card h-100 border-0 shadow-sm p-4">
-            <h4 class="fw-bold mb-3">Location</h4>
+            <h3 class="h4 fw-bold mb-3">Location</h3>
             <p><strong>Store:</strong> SwinMusic Shop</p>
             <p><strong>Address:</strong> 1 John Street, Hawthorn VIC 3122, Australia</p>
             <p><strong>City:</strong> Melbourne</p>
@@ -76,7 +76,7 @@
 
     <!-- CTA Section -->
     <section class="text-center py-4 border-top mt-4">
-      <h4 class="fw-bold mb-3">Ready to find your sound?</h4>
+      <h2 class="h4 fw-bold mb-3">Ready to find your sound?</h2>
       <router-link to="/products" class="btn btn-dark btn-lg me-2">Shop Now</router-link>
       <router-link to="/" class="btn btn-outline-dark btn-lg">Back to Home</router-link>
     </section>

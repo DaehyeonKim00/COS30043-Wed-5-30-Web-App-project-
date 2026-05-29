@@ -6,18 +6,18 @@
     <div v-if="msg" class="alert alert-success">{{ msg }}</div>
 
     <div class="mb-3">
-      <label class="form-label">Name</label>
-      <input v-model="form.name" type="text" class="form-control" placeholder="Letters only, min 2 characters" />
+      <label for="registerName" class="form-label">Name</label>
+      <input id="registerName" v-model="form.name" type="text" class="form-control" placeholder="Letters only, min 2 characters" />
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input v-model="form.email" type="email" class="form-control" placeholder="you@email.com" />
+      <label for="registerEmail" class="form-label">Email</label>
+      <input id="registerEmail" v-model="form.email" type="email" class="form-control" placeholder="you@email.com" />
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Password</label>
-      <input v-model="form.password" type="password" class="form-control" placeholder="Min. 8 characters" />
+      <label for="registerPassword" class="form-label">Password</label>
+      <input id="registerPassword" v-model="form.password" type="password" class="form-control" placeholder="Min. 8 characters" />
     </div>
 
     <button class="btn btn-primary w-100" @click="submit" :disabled="isLoading">
