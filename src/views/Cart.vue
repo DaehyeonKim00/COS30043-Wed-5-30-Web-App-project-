@@ -171,7 +171,7 @@ export default {
       this.closeAuthModal()
       this.$router.push('/home')
     },
-    reloadCart() { // Helper to reload cart after updates (advanced feature - tuan) 
+    reloadCart() { // Helper to reload cart after updates (advanced feature - tuan)
       var self = this
       var userId = self.$store.state.user.id
       return getCart(userId).then(data => {
@@ -181,7 +181,7 @@ export default {
     },
     deleteItem(cartId) {
       var self = this
-      // useCart composable — removeItem handles API + Vuex sync
+      // useCart composable - removeItem handles API + Vuex sync
       self.removeItem(cartId)
         .then(() => self.reloadCart())
         .catch(() => { self.err = 'Failed to remove item.' })

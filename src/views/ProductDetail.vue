@@ -145,7 +145,7 @@ export default {
       product: null,
       isLoading: false,
       err: '',
-      actionErr: '', 
+      actionErr: '',
       msg: '',
       inWishlist: false,
       recommendedProducts: []
