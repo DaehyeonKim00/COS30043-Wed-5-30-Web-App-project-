@@ -15,6 +15,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ($method) {
   case 'GET':
+    // Fetch the profile (name, email, role) of a single user
     if (!isset($_GET['user_id'])) {
       echo json_encode(['error' => 'user_id is required']);
       exit;
@@ -31,6 +32,7 @@ switch ($method) {
     echo json_encode($user);
     break;
   case 'PUT':
+    // Update the current user's name and email
     if (!isset($input['user_id']) || !isset($input['name']) || !isset($input['email'])) {
       echo json_encode(['error' => 'user_id, name and email are required']);
       exit;

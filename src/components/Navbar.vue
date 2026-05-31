@@ -9,7 +9,7 @@
           >
         </div>
 
-        <!-- Hamburger button (mobile only: < 768px) -->
+        <!-- Hamburger button -->
         <div class="col-4 d-xl-none d-flex justify-content-end">
           <button
             class="navbar-toggler"

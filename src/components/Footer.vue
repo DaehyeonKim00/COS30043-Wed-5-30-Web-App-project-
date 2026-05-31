@@ -1,7 +1,9 @@
 <template>
+  <!-- Site footer -->
   <footer class="wood-footer mt-5 pt-4 pb-3">
     <div class="container">
       <div class="row">
+        <!-- Brand / about column -->
         <div class="col-12 col-md-4 mb-4">
           <h5>SwinMusic Shop</h5>
           <p class="mb-0">
@@ -9,6 +11,7 @@
           </p>
         </div>
 
+        <!-- Quick navigation links -->
         <div class="col-12 col-md-4 mb-4">
           <h5>Quick Links</h5>
           <ul class="list-unstyled mb-0">
@@ -24,6 +27,7 @@
           </ul>
         </div>
 
+        <!-- Support / contact details -->
         <div class="col-12 col-md-4 mb-4">
           <h5>Support</h5>
           <p class="mb-1">Email: support@swinmusicshop.com</p>
@@ -32,6 +36,7 @@
         </div>
       </div>
 
+      <!-- Copyright bar -->
       <div class="row pt-3 border-top">
         <div class="col-12 text-center">
           <p class="mb-0">© 2026 SwinMusic Shop. All rights reserved.</p>

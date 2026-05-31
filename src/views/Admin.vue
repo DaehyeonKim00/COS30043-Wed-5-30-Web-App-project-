@@ -141,8 +141,6 @@ export default {
     }
   },
   computed: {
-    // Derive the category list from the products already in the DB,
-    // so the dropdown always reflects every category actually used.
     categories() {
       var set = {}
       this.products.forEach( p => {

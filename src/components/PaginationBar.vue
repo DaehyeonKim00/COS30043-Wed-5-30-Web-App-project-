@@ -1,4 +1,5 @@
 <template>
+  <!-- Pagination controls: only rendered when there is more than one page -->
   <div v-if="pageCount > 1">
     <paginate
       :page-count="pageCount"

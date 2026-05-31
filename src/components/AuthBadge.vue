@@ -1,9 +1,12 @@
 <template>
+  <!-- Session badge: shows remaining login time and turns red when expired -->
   <div class="auth-badge" role="status" aria-live="polite">
+    <!-- Status dot (green = active, red = expired) -->
     <span
       class="auth-badge__dot"
       :class="{ 'auth-badge__dot--expired': isExpired }"
     ></span>
+    <!-- Countdown / expiry text -->
     <span>{{ badgeText }}</span>
   </div>
 </template>

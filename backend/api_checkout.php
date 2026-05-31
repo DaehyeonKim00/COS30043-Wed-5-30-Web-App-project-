@@ -15,6 +15,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ($method) {
   case 'POST':
+    // Place an order in a transaction: verify stock, create the order and its items, decrement stock, and clear the cart
     if (!$input || !isset($input['user_id']) || !isset($input['items'])) {
       echo json_encode(['error' => 'Invalid request payload.']);
       exit;

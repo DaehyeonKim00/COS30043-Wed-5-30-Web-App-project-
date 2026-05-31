@@ -1,5 +1,6 @@
 const checkoutApiUrl = 'https://mercury.swin.edu.au/cos30043/s104838522/test/backend/api_checkout.php'
 
+// Submit a new order with the cart items and total price
 export function placeOrder(userId, totalPrice, items) {
   return fetch(checkoutApiUrl, {
     method: 'POST',

@@ -15,6 +15,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ($method) {
   case 'GET':
+    // Return all cart items for a user, joined with product details
     if (!isset($_GET['user_id'])) {
       echo json_encode(['error' => 'user_id is required']);
       exit;
@@ -30,6 +31,7 @@ switch ($method) {
     echo json_encode($items);
     break;
   case 'POST':
+    // Add a product to the cart (or update its quantity), enforcing the available stock limit
     $user_id = $input['user_id'];
     $product_id = $input['product_id'];
     $quantity = isset($input['quantity']) ? $input['quantity'] : 1;
@@ -74,6 +76,7 @@ switch ($method) {
     }
     break;
   case 'PUT':
+    // Update the quantity of a single cart item
     $id = $input['id'];
     $quantity = $input['quantity'];
     $result = mysqli_query($conn, "UPDATE cart SET quantity=$quantity WHERE id=$id");
@@ -84,6 +87,7 @@ switch ($method) {
     }
     break;
   case 'DELETE':
+    // Remove a single item from the cart by its id
     $id = $input['id'];
     $result = mysqli_query($conn, "DELETE FROM cart WHERE id=$id");
     if ($result) {

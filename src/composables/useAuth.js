@@ -1,9 +1,7 @@
-// This file defines a Vue 3 composable that provides reactive state and functions for managing user authentication and authorization.
-// It uses the Vuex store to access user information and provides functions to check if a user is logged in, and to show a modal prompt if the user is not logged in.
 import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 
-// Modal/guard composable — UI only. Session/logout is handled by authSession.js
+// Modal/guard composable - UI only. Session/logout is handled by authSession.js
 export function useAuth() {
   var store = useStore()
 
@@ -15,6 +13,7 @@ export function useAuth() {
   var showAuthModal = ref(false)
   var authModalMessage = ref('Please log in to continue.')
 
+  // Ensure the user is logged in; opens the auth modal and returns false if not
   function requireAuth(message) {
     if (!store.state.user) {
       authModalMessage.value = message || 'You must be logged in to access this page.'
@@ -24,6 +23,7 @@ export function useAuth() {
     return true
   }
 
+  // Close the auth prompt modal
   function closeAuthModal() {
     showAuthModal.value = false
   }

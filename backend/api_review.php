@@ -15,6 +15,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ($method) {
   case 'GET':
+    // Return reviews (with user and product info), filtered by product_id when provided
     // If product_id is provided, filter by it; otherwise return all reviews.
     // Join with products to include the product name for "all reviews" view.
     if (isset($_GET['product_id']) && $_GET['product_id'] !== '') {
@@ -37,6 +38,7 @@ switch ($method) {
     echo json_encode($reviews);
     break;
   case 'POST':
+    // Create a new review (rating and comment) for a product
     $user_id = mysqli_real_escape_string($conn, $input['user_id']);
     $product_id = mysqli_real_escape_string($conn, $input['product_id']);
     $rating = mysqli_real_escape_string($conn, $input['rating']);
@@ -49,6 +51,7 @@ switch ($method) {
     }
     break;
   case 'PUT':
+    // Update an existing review's rating and comment
     $id = mysqli_real_escape_string($conn, $input['id']);
     $rating = mysqli_real_escape_string($conn, $input['rating']);
     $comment = mysqli_real_escape_string($conn, $input['comment']);
@@ -60,6 +63,7 @@ switch ($method) {
     }
     break;
   case 'DELETE':
+    // Delete a review by its id
     $id = mysqli_real_escape_string($conn, $input['id']);
     $result = mysqli_query($conn, "DELETE FROM reviews WHERE id = '$id'");
     if ($result) {

@@ -15,6 +15,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ($method) {
   case 'GET':
+    // Return all wishlist items for a user, joined with product details
     if (!isset($_GET['user_id'])) {
       echo json_encode(['error' => 'user_id is required']);
       exit;
@@ -30,6 +31,7 @@ switch ($method) {
     echo json_encode($items);
     break;
   case 'POST':
+    // Add a product to the wishlist, skipping if it is already present
     $user_id = $input['user_id'];
     $product_id = $input['product_id'];
     $check = mysqli_query($conn,
@@ -46,6 +48,7 @@ switch ($method) {
     }
     break;
   case 'DELETE':
+    // Remove a wishlist item, either by its id or by user_id + product_id
     if (isset($input['id'])) {
       $id = $input['id'];
       $result = mysqli_query($conn, "DELETE FROM wishlist WHERE id=$id");

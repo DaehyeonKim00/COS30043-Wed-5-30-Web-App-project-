@@ -1,4 +1,5 @@
 <template>
+  <!-- Reusable page title heading -->
   <h1 class="mb-4">{{ title }}</h1>
 </template>
 

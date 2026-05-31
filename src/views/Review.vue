@@ -167,7 +167,7 @@ export default {
     }
   },
   computed: {
-    // Reactive: updates automatically when Vuex user changes (e.g. on logout)
+    // Reactive: updates automatically when Vuex user changes 
     user() {
       return this.$store.state.user
     }
@@ -182,8 +182,7 @@ export default {
         self.err = 'Failed to load products. Please try again later.'
       })
 
-    // If arriving with ?product_id=X (e.g. from ProductDetail), open "By Product"
-    // mode with that product preselected. Otherwise default to "All Reviews".
+    
     var qid = self.$route.query.product_id
     if (qid) {
       self.viewMode = 'product'
@@ -200,8 +199,7 @@ export default {
         this.loadReviews()
       }
     },
-    // React to query changes if user navigates to /review?product_id=Y while
-    // already on the Review page.
+    
     '$route.query.product_id'(newId) {
       if (newId) {
         this.viewMode = 'product'

@@ -1,4 +1,5 @@
 <template>
+  <!-- Centered loading spinner shown while data is being fetched -->
   <div class="text-center py-5">
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>

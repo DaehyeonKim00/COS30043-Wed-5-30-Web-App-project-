@@ -129,7 +129,7 @@ export default {
     categories() {
       return [...new Set(this.products.map(p => p.category))]
     },
-    // Filter by name and category (applookup2.js filteredUnits pattern)
+    // Filter by name and category 
     filteredProducts() {
       return this.products.filter(p =>
         (p.name || '').toLowerCase().includes(this.filter.name.toLowerCase()) &&

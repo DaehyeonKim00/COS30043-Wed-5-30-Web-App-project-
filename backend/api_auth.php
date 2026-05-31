@@ -15,6 +15,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ($method) {
   case 'POST':
+    // Handle authentication: log in an existing user or register a new account based on the 'action' field
     if (isset($input['action']) && $input['action'] === 'login') {
       $email = mysqli_real_escape_string($conn, $input['email']);
       $result = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");

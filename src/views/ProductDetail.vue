@@ -91,7 +91,7 @@
       </div>
     </div>
 
-    <!-- Auth Modal — shown when unauthenticated user tries to add to cart/wishlist -->
+    <!-- Auth Modal - shown when unauthenticated user tries to add to cart/wishlist -->
     <AuthPromptModal
       :show="showAuthModal"
       :message="authModalMessage"
@@ -161,7 +161,7 @@ export default {
     this.loadProduct(this.$route.params.id)
   },
   watch: {
-    // Re-fetch when navigating between products (e.g. via "You May Also Like")
+    // Re-fetch when navigating between products 
     '$route.params.id'(newId) {
       if (newId) {
         // Scroll to top so the user clearly sees the new product

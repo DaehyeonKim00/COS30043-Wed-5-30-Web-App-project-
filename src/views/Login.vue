@@ -2,8 +2,10 @@
   <div class="container mt-5" style="max-width: 500px">
     <PageHeader title="Login" />
 
+    <!-- Error message -->
     <ErrorAlert :message="err" />
 
+    <!-- Email field -->
     <div class="mb-3">
       <label for="loginEmail" class="form-label">Email</label>
       <input
@@ -15,6 +17,7 @@
       />
     </div>
 
+    <!-- Password field -->
     <div class="mb-3">
       <label for="loginPassword" class="form-label">Password</label>
       <input
@@ -26,6 +29,7 @@
       />
     </div>
 
+    <!-- "Keep me logged in" toggle (persists session in localStorage) -->
     <div class="form-check mb-3">
       <input
         id="rememberMe"
@@ -38,10 +42,12 @@
       </label>
     </div>
 
+    <!-- Submit button -->
     <button class="btn btn-primary w-100" @click="submit" :disabled="isLoading">
       {{ isLoading ? 'Logging in...' : 'Login' }}
     </button>
 
+    <!-- Link to registration -->
     <p class="mt-3 text-center">
       No account yet? <router-link to="/register">Register here</router-link>
     </p>

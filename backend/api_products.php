@@ -15,7 +15,9 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ($method) {
   case 'GET':
+    // Fetch products: by id, recommendations, by category, by search keyword, or all products
     if (isset($_GET['id'])) {
+      // Return a single product by id
       $id = $_GET['id'];
       $result = mysqli_query($conn, "SELECT * FROM products WHERE id=$id");
       $product = mysqli_fetch_assoc($result);
@@ -60,22 +62,26 @@ switch ($method) {
     echo json_encode($products);
 
     } elseif (isset($_GET['category'])) {
+      // Return all products in a given category
       $category = $_GET['category'];
       $result = mysqli_query($conn, "SELECT * FROM products WHERE category='$category'");
       $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
       echo json_encode($products);
     } elseif (isset($_GET['search'])) {
+      // Search products by name or category keyword
       $search = $_GET['search'];
       $result = mysqli_query($conn, "SELECT * FROM products WHERE name LIKE '%$search%' OR category LIKE '%$search%'");
       $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
       echo json_encode($products);
     } else {
+      // Return the full product list
       $result = mysqli_query($conn, "SELECT * FROM products");
       $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
       echo json_encode($products);
     }
     break;
   case 'POST':
+    // Create a new product
     $name = $input['name'];
     $category = $input['category'];
     $description = $input['description'];
@@ -93,6 +99,7 @@ switch ($method) {
     }
     break;
   case 'PUT':
+    // Update an existing product's details
     $id = $input['id'];
     $name = $input['name'];
     $category = $input['category'];
@@ -113,6 +120,7 @@ switch ($method) {
     }
     break;
   case 'DELETE':
+    // Delete a product by its id
     $id = $input['id'];
     $result = mysqli_query($conn, "DELETE FROM products WHERE id=$id");
     if ($result) {

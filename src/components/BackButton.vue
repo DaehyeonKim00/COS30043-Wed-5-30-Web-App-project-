@@ -1,4 +1,5 @@
 <template>
+  <!-- Back navigation button linking to the given route -->
   <router-link :to="to" class="btn btn-outline-secondary mb-4">
     &larr; {{ label }}
   </router-link>

@@ -31,11 +31,13 @@ if (isset($input)) {
 
 switch ($method) {
   case 'GET':
+    // Return all products ordered by newest first (admin product list)
     $result = mysqli_query($conn, "SELECT * FROM `$table` ORDER BY created_at DESC");
     $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
     echo json_encode($products);
     break;
   case 'POST':
+    // Create a new product from the submitted fields
     $result = mysqli_query($conn, "INSERT INTO `$table` SET $set");
     if ($result) {
       echo json_encode(['success' => true, 'id' => mysqli_insert_id($conn)]);
@@ -44,6 +46,7 @@ switch ($method) {
     }
     break;
   case 'PUT':
+    // Update an existing product identified by its id
     $id = mysqli_real_escape_string($conn, $input['id']);
     $result = mysqli_query($conn, "UPDATE `$table` SET $set WHERE `id`='$id'");
     if ($result) {
@@ -53,6 +56,7 @@ switch ($method) {
     }
     break;
   case 'DELETE':
+    // Delete a product by its id
     $id = mysqli_real_escape_string($conn, $input['id']);
     $result = mysqli_query($conn, "DELETE FROM `$table` WHERE `id`='$id'");
     if ($result) {

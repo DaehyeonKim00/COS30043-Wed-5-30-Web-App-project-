@@ -1,12 +1,8 @@
-// src/composables/useCart.js
-// Advanced feature - This file defines a Vue 3 composable that provides reactive state
-// and functions for managing the shopping cart.
-// It uses the cart API functions defined in src/api/cart.js and synchronises with the
-// Vuex store so components can easily access and modify the cart without dealing with API calls directly.
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { addToCart, removeFromCart, updateCartQuantity } from '../api/cart.js'
 
+// Cart composable: exposes reactive cart state and actions backed by the Vuex store
 export function useCart() {
   const store = useStore()
 
@@ -18,6 +14,7 @@ export function useCart() {
     }, 0).toFixed(2)
   })
 
+  // Add a product to the cart, then refresh the cart state on success
   function addItem(userId, productId, quantity = 1) {
     return addToCart(userId, productId, quantity)
       .then(data => {
@@ -28,6 +25,7 @@ export function useCart() {
       })
   }
 
+  // Remove an item from the cart, then refresh the cart state
   function removeItem(cartId) {
     return removeFromCart(cartId)
       .then(data => {
@@ -36,6 +34,7 @@ export function useCart() {
       })
   }
 
+  // Update an item's quantity, then refresh the cart state on success
   function updateQuantity(cartId, quantity) {
     return updateCartQuantity(cartId, quantity)
       .then(data => {

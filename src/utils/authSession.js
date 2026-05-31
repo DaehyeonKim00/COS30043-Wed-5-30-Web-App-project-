@@ -3,6 +3,7 @@ const REMEMBER_KEY = 'rememberMe'
 const EXPIRES_AT_KEY = 'expiresAt'
 const DEFAULT_SESSION_MINUTES = 30
 
+// Safely parse a JSON string, returning null on empty or invalid input
 function parseJSON(value) {
   if (!value) return null
   try {
@@ -12,6 +13,7 @@ function parseJSON(value) {
   }
 }
 
+// Persist the logged-in user and expiry to local/session storage based on "remember me"
 export function saveAuthSession(
   user,
   rememberMe,
@@ -28,6 +30,7 @@ export function saveAuthSession(
   otherStorage.removeItem(EXPIRES_AT_KEY)
 }
 
+// Read the stored auth session, preferring sessionStorage then localStorage
 export function readAuthSession() {
   var sessionUser = parseJSON(sessionStorage.getItem(USER_KEY))
   if (sessionUser) {
@@ -54,6 +57,7 @@ export function readAuthSession() {
   }
 }
 
+// Remove the auth session from both local and session storage (logout)
 export function clearAuthSession() {
   sessionStorage.removeItem(USER_KEY)
   sessionStorage.removeItem(REMEMBER_KEY)
@@ -63,6 +67,7 @@ export function clearAuthSession() {
   localStorage.removeItem(EXPIRES_AT_KEY)
 }
 
+// Format a millisecond duration as an MM:SS countdown string
 export function formatDuration(msRemaining) {
   var safeMs = Math.max(0, msRemaining)
   var totalSeconds = Math.floor(safeMs / 1000)

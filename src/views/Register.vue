@@ -2,28 +2,34 @@
   <div class="container mt-5" style="max-width: 500px">
     <PageHeader title="Create Account" />
 
+    <!-- Error / success messages -->
     <ErrorAlert :message="err" />
     <div v-if="msg" class="alert alert-success">{{ msg }}</div>
 
+    <!-- Name field -->
     <div class="mb-3">
       <label for="registerName" class="form-label">Name</label>
       <input id="registerName" v-model="form.name" type="text" class="form-control" placeholder="Letters only, min 2 characters" />
     </div>
 
+    <!-- Email field -->
     <div class="mb-3">
       <label for="registerEmail" class="form-label">Email</label>
       <input id="registerEmail" v-model="form.email" type="email" class="form-control" placeholder="you@email.com" />
     </div>
 
+    <!-- Password field -->
     <div class="mb-3">
       <label for="registerPassword" class="form-label">Password</label>
       <input id="registerPassword" v-model="form.password" type="password" class="form-control" placeholder="Min. 8 characters" />
     </div>
 
+    <!-- Submit button -->
     <button class="btn btn-primary w-100" @click="submit" :disabled="isLoading">
       {{ isLoading ? 'Registering...' : 'Register' }}
     </button>
 
+    <!-- Link to login -->
     <p class="mt-3 text-center">
       Already have an account? <router-link to="/login">Login here</router-link>
     </p>

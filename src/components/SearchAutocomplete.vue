@@ -1,6 +1,7 @@
 <!-- Daehyeon Kim Advanced Feature -->
 <template>
   <div class="search-autocomplete position-relative">
+    <!-- Search input with keyboard navigation (arrows / enter / esc) -->
     <form class="d-flex" @submit.prevent="onEnter">
       <input
         v-model="keyword"
@@ -20,6 +21,7 @@
       <button class="btn btn-primary btn-sm text-nowrap" type="submit">Search</button>
     </form>
 
+    <!-- Suggestions dropdown: matching products with thumbnail and price -->
     <ul
       v-if="showDropdown && suggestions.length > 0"
       class="list-group autocomplete-dropdown shadow"
@@ -45,6 +47,7 @@
       </li>
     </ul>
 
+    <!-- No-results message when the keyword matches nothing -->
     <div
       v-else-if="showDropdown && keyword.trim() && suggestions.length === 0"
       class="list-group autocomplete-dropdown shadow"
